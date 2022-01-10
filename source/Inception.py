@@ -62,29 +62,11 @@ class InceptionUnit(keras.layers.Layer):
         return self.concat([z0, z1, z2, z3])
 
     
-    def build_graph(self, dim = (224, 224, 64),
-        to_file='Inception.png',
-        show_shapes=False,
-        show_dtype=False,
-        show_layer_names=True,
-        rankdir='TB',
-        expand_nested=False,
-        dpi=96,
-        layer_range=None,
-        show_layer_activations=False):
+    def build_graph(self, dim = (224, 224, 64), to_file="Inception.png", **kwargs):
         x = keras.layers.Input(shape=(dim))
         model = keras.Model(inputs=[x], outputs=self.call(x))
-        keras.utils.plot_model(model,
-            to_file=to_file,
-            show_shapes=show_shapes,
-            show_dtype=show_dtype,
-            show_layer_names=show_layer_names,
-            rankdir=rankdir,
-            expand_nested=expand_nested,
-            dpi=dpi,
-            layer_range=layer_range,
-            show_layer_activations=show_layer_activations)
+        keras.utils.plot_model(model, to_file=to_file, **kwargs)
 
 if __name__ == "__main__":
     inception = InceptionUnit()
-    inception.build_graph()
+    inception.build_graph(to_file="D:\Programming\Python\Tender-Notice-Extraction\img\Inception.png")
