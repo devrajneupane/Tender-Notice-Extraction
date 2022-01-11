@@ -1,0 +1,10 @@
+/.ipynb_checkpoints/*
+*/Images/*
+/Images/*
+*/Newspapers/*
+/Newspapers/*
+/Notices/*
+*/Notices/*
+*.jpeg
+*.pdf
+*.png
