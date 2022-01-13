@@ -21,7 +21,7 @@ for newspaper in newspapers:
             pass          
         for i in range (0,doc.page_count):
             page=doc.load_page(i)
-            pix = page.get_pixmap(matrix=fitz.Identity,dpi=500)
+            pix = page.get_pixmap(matrix=fitz.Matrix(5,5))
             output = "page"+str(i)+".jpg"
             pix.save((output_path+output))
         doc.close()
