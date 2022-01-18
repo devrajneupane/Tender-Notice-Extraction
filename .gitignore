@@ -5,6 +5,14 @@
 /Newspapers/*
 /Notices/*
 */Notices/*
+*/Datasets/*
+/Datasets/*
+/source/__pycache__/*
+/source/__pycache__/
+*/logs/*
+/logs/*
+*/models/*
+/models/*
 *.jpeg
 *.pdf
 *.png
