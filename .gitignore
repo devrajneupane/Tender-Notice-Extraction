@@ -1,3 +1,10 @@
+/.ipynb_checkpoints/*
+*/Images/*
+/Images/*
+*/Newspapers/*
+/Newspapers/*
+/Notices/*
+*/Notices/*
 */Datasets/*
 /Datasets/*
 /source/__pycache__/*
@@ -13,3 +20,4 @@
 /Newspapers/*
 /Notices/*
 */Notices/*
+
