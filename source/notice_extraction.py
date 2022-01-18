@@ -69,3 +69,6 @@ for newspaper in newspaper_collection:
    #    plt.show()
    #    # break
    # break
+      os.remove("./Images/"+newspaper+"/"+page)
+   os.rmdir("./Images/"+newspaper)
+os.rmdir("./Images/")
