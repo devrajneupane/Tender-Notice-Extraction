@@ -5,6 +5,8 @@ from tensorflow import keras
 class InceptionUnit(keras.layers.Layer):
     def __init__(self, filters = [64, 96, 16, 128, 32, 32], strides=1, activation="relu", **kwargs):
         super().__init__(**kwargs)
+        self.filters = filters
+        self.strides = strides
         self.activation = keras.activations.get(activation)
 
         self.convo_1x1_zero = [ keras.layers.Conv2D(filters[0], 1, strides = strides, padding = "same", use_bias = False),
@@ -66,6 +68,15 @@ class InceptionUnit(keras.layers.Layer):
         x = keras.layers.Input(shape=(dim))
         model = keras.Model(inputs=[x], outputs=self.call(x))
         keras.utils.plot_model(model, to_file=to_file, **kwargs)
+    
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            "filters": self.filters,
+            "strides": self.strides,
+            "activation": self.activation,
+        })
+        return config
 
 if __name__ == "__main__":
     inception = InceptionUnit()

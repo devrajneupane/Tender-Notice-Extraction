@@ -5,6 +5,9 @@ from tensorflow import keras
 class XceptionUnit(keras.layers.Layer):
     def __init__(self, filters, activation="relu",isEntryExit=False, isFirst=False, **kwargs):
         super().__init__(**kwargs)
+        self.filters = filters
+        self.isEntryExit = isEntryExit
+        self.isFirst = isFirst
         self.activation = keras.activations.get(activation)
         self.main_layers = [
             self.activation,
@@ -18,11 +21,11 @@ class XceptionUnit(keras.layers.Layer):
 
         self.concat = keras.layers.Concatenate()
 
-        if isEntryExit == True and isFirst == True:
+        if self.isEntryExit == True and self.isFirst == True:
             self.main_layers = self.main_layers[1:]
         self.skip_layers = []
 
-        if isEntryExit == True:
+        if self.isEntryExit == True:
             self.main_layers[-1] = keras.layers.MaxPooling2D(3, strides = 2, padding = "same")
             self.skip_layers = [
                 keras.layers.Conv2D(filters, 1, strides = 2, padding = "same", use_bias = False),
@@ -42,6 +45,16 @@ class XceptionUnit(keras.layers.Layer):
         x = keras.layers.Input(shape=(dim))
         model = keras.Model(inputs=[x], outputs=self.call(x))
         keras.utils.plot_model(model, to_file=to_file, **kwargs)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            "filters": self.filters,
+            "activation": self.activation,
+            "isEntryExit": self.isEntryExit,
+            "isFirst": self.isFirst,
+        })
+        return config
 
         
 if __name__ == "__main__":
