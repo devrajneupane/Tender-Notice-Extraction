@@ -76,3 +76,7 @@ def extract_notice():
          # os.remove("./Images/"+newspaper+"/"+page)
       # os.rmdir("./Images/"+newspaper)
    # os.rmdir("./Images/")
+<<<<<<< HEAD
+=======
+extract_notice()
+>>>>>>> ocr

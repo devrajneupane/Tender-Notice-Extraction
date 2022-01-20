@@ -35,4 +35,9 @@ def extract_image():
                 print("\t==>Image conversion of page [%s/%s]"%(i+1,doc.page_count))
                 pix.save((output_path+output))
             doc.close()
+<<<<<<< HEAD
         # os.remove("./Newspapers/"+newspaper)
+=======
+        # os.remove("./Newspapers/"+newspaper)
+extract_image()
+>>>>>>> ocr
