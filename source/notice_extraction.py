@@ -4,9 +4,9 @@ import fitz
 import matplotlib.pyplot as plt
 print()
 THRESH_VALUE=100
-TUNING_FACTOR=0.0001
-MIN_WIDTH=500   #minimum width of the reactangle to be extracted
-MIN_HEIGHT=500  #minimum height of the reactangle to be extracted
+TUNING_FACTOR=0.001
+MIN_WIDTH=100   #minimum width of the reactangle to be extracted
+MIN_HEIGHT=100  #minimum height of the reactangle to be extracted
 # MAX_ASPECT_RATIO=3
 MAX_WIDTH=6000    #maximum width of the reactangle to be extracted
 MAX_HEIGHT=6000     #maximum height of the reactangle to be extracted
@@ -72,6 +72,7 @@ def extract_notice():
       #    plt.show()
       #    # break
       # break
-         os.remove("./Images/"+newspaper+"/"+page)
-      os.rmdir("./Images/"+newspaper)
-   os.rmdir("./Images/")
+         # os.remove("./Images/"+newspaper+"/"+page)
+      # os.rmdir("./Images/"+newspaper)
+   # os.rmdir("./Images/")
+extract_notice()
