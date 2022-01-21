@@ -1,2 +1,5 @@
 /Downloads/*
-*/Downloads/*
+/Newspapers/*
+/.vscode/*
+*/.vscode/*
+*.env

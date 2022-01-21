@@ -1,14 +1,15 @@
 import os
-import base64
 import requests
 from bs4 import BeautifulSoup
+from dotenv.main import load_dotenv
 from requests.adapters import HTTPAdapter
 
 url_list = []
-url = "aHR0cHM6Ly9nb3JraGFwYXRyYS5vcmcubnAvbm90aWNlcyZmaWx0ZXJfY2F0ZWdvcnlfaWQ9Ngo="
-url = str(base64.b64decode(url), "utf-8")
 download_dir = "Downloads"
 request_adapter = HTTPAdapter(max_retries=3)
+
+load_dotenv()
+url = os.environ['URL1']
 
 
 def grep_url(url):
