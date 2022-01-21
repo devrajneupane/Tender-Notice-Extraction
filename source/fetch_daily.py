@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service
 load_dotenv()
 # url = os.environ['URL2']
 url="https://epaper.gorkhapatraonline.com/single/rising-nepal"
-download_dir = os.getcwd().split("source")[0] + "Newspapers"
+download_dir = os.path.join(os.getcwd().split("source")[0],  "Newspapers")
 
 options = webdriver.ChromeOptions()
 # options.binary_location = os.environ["BINARY_EXECUTABLE"]
