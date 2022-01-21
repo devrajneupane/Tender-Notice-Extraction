@@ -1,6 +1,7 @@
 /.ipynb_checkpoints/*
 */Images/*
 /Images/*
+Downloads/*
 */Newspapers/*
 /Newspapers/*
 /Notices/*
@@ -20,4 +21,5 @@
 /Newspapers/*
 /Notices/*
 */Notices/*
-
+*.env
+.vscode/*
