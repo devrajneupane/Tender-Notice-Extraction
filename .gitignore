@@ -26,3 +26,4 @@
 /.vscode/*
 */.vscode/*
 *.env
+/driver/*

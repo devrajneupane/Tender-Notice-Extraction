@@ -2,18 +2,17 @@ import os
 import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from dotenv.main import load_dotenv
+from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
 load_dotenv()
-# url = os.environ['URL2']
-url="https://epaper.gorkhapatraonline.com/single/rising-nepal"
+url = os.environ['URL2']
+print(url)
 download_dir = os.path.join(os.getcwd().split("source")[0],  "Newspapers")
 
 options = webdriver.ChromeOptions()
-# options.binary_location = os.environ["BINARY_EXECUTABLE"]
-options.binary_location="/usr/bin/brave"
+options.binary_location = os.environ['BINARY_EXECUTABLE']
 options.add_argument("--incognito")
 options.headless = True
 options.add_experimental_option("prefs", {
@@ -23,8 +22,7 @@ options.add_experimental_option("prefs", {
                                 "safebrowsing.enabled": True
                                 })
 
-# driver_path = os.environ['DRIVER_PATH']
-driver_path = "/home/anuj/Music/chromedriver"
+driver_path = os.environ['DRIVER_PATH']
 
 with webdriver.Chrome(service=Service(executable_path=driver_path), options=options) as browser:
     browser.get(url)

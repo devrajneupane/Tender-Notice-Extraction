@@ -1,4 +1,0 @@
-URL1 = https://gorkhapatra.org.np/notices&filter_category_id=6
-URL2 = https://epaper.gorkhapatraonline.com/single/rising-nepal
-DRIVER_PATH = /home/anuj/Music/chromedriver
-BINARY_EXECUTABLE = /usr/bin/brave
