@@ -4,3 +4,4 @@
 bids
 bid
 intent
+invitation
