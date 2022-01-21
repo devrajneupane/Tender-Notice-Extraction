@@ -2,7 +2,7 @@ import pytesseract as tess
 import cv2
 import matplotlib.pyplot as plt
 import os
-print()
+print("helo")
 try:
     dicx=open("dict.txt","r")
 except FileNotFoundError:
