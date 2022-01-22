@@ -1,19 +1,24 @@
 import pytesseract as tess
-tess.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# tess.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 import cv2
 import matplotlib.pyplot as plt
 import os
-print("helo")
 try:
     dicx=open("dict.txt","r", encoding="utf-8")
 except FileNotFoundError:
     print("dict.txt not found")
     exit()
+
+try:
+    os.mkdir("Tender")
+except FileExistsError:
+    pass
+
 # print(dicx.read())
 dic=dicx.read().lower().splitlines()
 dicx.close()
 # print(dic[3]=="bids")
-def is_notice(img):
+def is_tender(img):
     """ 
     img in grayscale format for better performance
     """
@@ -34,10 +39,21 @@ def is_notice(img):
     else:
         return False
 
-if __name__ == '__main__':
-    path = r"D:\Programming\Python\Tender-Notice-Extraction\Notices\1"
-    imdir = os.listdir(path)
-    for i in imdir:
-        fp = path + f"\{i}"
-        res = is_notice(cv2.imread(fp,0))
-        print(fp, res)
+def tender_filter():
+    folder_list = os.listdir("./Notices/")
+    folder_count=0
+    for folder in folder_list:
+        folder_count+=1
+        print(f"Processing Newspaper: {folder}=====================[{folder_count}/{len(folder_list)}]")
+        img_list=os.listdir("./Notices/"+folder+"/")
+        image_count=0
+        for img in img_list:
+            image_count+=1
+            print(f"\t==> Processing {img} for tender [{image_count}/{len(img_list)}]")
+            image=cv2.imread("./Notices/"+folder+"/"+img,0)
+
+            if is_tender(image):
+                cv2.imwrite(f"./Tender/{img}", image)                
+    #         os.remove(path="./Notices/"+folder+"/"+img)
+    #     os.rmdir("./Notices/"+folder)
+    # os.rmdir("./Notices")

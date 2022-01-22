@@ -24,7 +24,7 @@ def get_model():
     model.add(keras.layers.Dense(10, activation = "relu"))
     model.add(keras.layers.Dense(2, activation = "softmax"))
 
-    model.load_weights("D:\Programming\Python\Tender-Notice-Extraction\source\models\model.h5")
+    model.load_weights("model.h5")
     return model
 
 if __name__ == '__main__':
