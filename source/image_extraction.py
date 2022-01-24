@@ -31,13 +31,10 @@ def extract_image():
             for i in range (0,doc.page_count):
                 page=doc.load_page(i)
                 pix = page.get_pixmap(matrix=fitz.Matrix(5,5))
-                output = "page"+str(i)+".jpg"
+                output = newspaper[:-4]+"_"+str(i)+".jpg"
                 print("\t==>Image conversion of page [%s/%s]"%(i+1,doc.page_count))
                 pix.save((output_path+output))
             doc.close()
-<<<<<<< HEAD
         # os.remove("./Newspapers/"+newspaper)
-=======
-        # os.remove("./Newspapers/"+newspaper)
-extract_image()
->>>>>>> ocr
+if __name__=="__main__":
+    extract_image()

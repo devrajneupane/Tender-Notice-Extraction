@@ -60,9 +60,8 @@ def extract_notice():
                   # cv2.drawContours(img,contour,-1,(0,255,0),10)
                   #cropping only the rectangle containing the notice
                   # cv2.drawContours(img,[contour],0,(0,255,0),3)
-                  cropped_image=img[y:y+h,x:x+w]        
-                  
-                  cv2.imwrite(output_path+"notice"+str(count)+".jpg", cropped_image)
+                  cropped_image=img[y:y+h,x:x+w]    
+                  cv2.imwrite(output_path+page.split(".",1)[0]+"_"+str(count)+".jpg", cropped_image)
       #    plt.imshow(img[:,:,::-1],cmap="viridis")
       #    plt.imshow(thresh[:,::-1],cmap="gray")
       #    plt.axis('off')
@@ -73,10 +72,8 @@ def extract_notice():
       #    plt.show()
       #    # break
       # break
-         # os.remove("./Images/"+newspaper+"/"+page)
-      # os.rmdir("./Images/"+newspaper)
+   #       os.remove("./Images/"+newspaper+"/"+page)
+   #    os.rmdir("./Images/"+newspaper)
    # os.rmdir("./Images/")
-<<<<<<< HEAD
-=======
-extract_notice()
->>>>>>> ocr
+if __name__=="__main__":
+   extract_notice()
