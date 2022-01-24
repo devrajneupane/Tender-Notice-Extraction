@@ -1,26 +1,26 @@
+# notebook checkpoints
 /.ipynb_checkpoints/*
-*/Images/*
-/Images/*
+
+# User defined driectories
+Images/*
 Downloads/*
-*/Newspapers/*
-/Newspapers/*
-/Notices/*
-*/Notices/*
-*/Datasets/*
-/Datasets/*
-/source/__pycache__/*
-/source/__pycache__/
-*/logs/*
-/logs/*
-*/models/*
+Newspapers/*
+Notices/*
+Datasets/*
+Screenshots/*
+
+# bytecode cache files
+*/__pycache__/*
+
+# TF logs and models
+logs/*
 /models/*
-/.ipynb_checkpoints/*
-*/Images/*
-/Images/*
-*/Newspapers/*
-/Newspapers/*
-/Notices/*
-*/Notices/*
+
+# Environment Variables
 *.env
-.vscode/*
-/driver/*
+
+# VScode settings
+*/.vscode/*
+
+# chrome driver
+driver/*
