@@ -1,7 +1,10 @@
 बोलपत्रहरु
 प्रस्तात
 बोलपत्र
+सिलबन्दी
+बोलपत्र/
 bids
+bidder
 bid
 intent
 invitation
