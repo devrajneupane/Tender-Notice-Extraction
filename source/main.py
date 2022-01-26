@@ -18,6 +18,7 @@ def main():
     image_extraction.extract_image()
     # extract notices from jpg
     notice_extraction.extract_notice()
+    
     ocr.tender_filter()
     # fetch and check the notices using the model
     # publish the notices on the website

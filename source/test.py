@@ -24,20 +24,21 @@ def is_tender(img):
     """
     strike = 0
     text=tess.image_to_data(img,lang="eng+nep",timeout=240)
-    for x,b in enumerate(text.splitlines()):
-        if x !=0:
-            b=b.split()
-            if len(b)==12:
-                b[11]=b[11].lower()
-                s1=set(dic)
-                s2=set(b)
-                res=s1.intersection(s2)
-                if (len(res) !=0):
-                    strike+=1
-    if strike>=1:
-        return True
-    else:
-        return False
+    print(text)
+    # for x,b in enumerate(text.splitlines()):
+    #     if x !=0:
+    #         b=b.split()
+    #         if len(b)==12:
+    #             b[11]=b[11].lower()
+    #             s1=set(dic)
+    #             s2=set(b)
+    #             res=s1.intersection(s2)
+    #             if (len(res) !=0):
+    #                 strike+=1
+    # if strike>=1:
+    #     return True
+    # else:
+    #     return False
 
 def tender_filter():
     folder_list = os.listdir("./Notices/")
@@ -60,4 +61,5 @@ def tender_filter():
     # os.rmdir("./Notices")
 
 if __name__=="__main__":
-    tender_filter()
+    image=cv2.imread("./source/news.jpg",0)
+    is_tender(image)

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # print()
 
 THRESH_VALUE=100
-TUNING_FACTOR=0.001
+TUNING_FACTOR=0.0001
 MIN_WIDTH=100   #minimum width of the reactangle to be extracted
 MIN_HEIGHT=100  #minimum height of the reactangle to be extracted
 # MAX_ASPECT_RATIO=3

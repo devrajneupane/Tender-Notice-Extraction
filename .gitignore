@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # notebook checkpoints
 /.ipynb_checkpoints/*
 
@@ -8,6 +9,7 @@ Newspapers/*
 Notices/*
 Datasets/*
 Screenshots/*
+Tender/*
 
 # bytecode cache files
 */__pycache__/*
@@ -25,3 +27,19 @@ logs/*
 
 # chrome driver
 driver/*
+=======
+*/Datasets/*
+/Datasets/*
+/source/__pycache__/*
+/source/__pycache__/
+*/logs/*
+/logs/*
+/.ipynb_checkpoints/*
+*/Images/*
+/Images/*
+*/Newspapers/*
+/Newspapers/*
+/Notices/*
+*/Notices/*
+/source/models/datasets.npy
+>>>>>>> origin/models
