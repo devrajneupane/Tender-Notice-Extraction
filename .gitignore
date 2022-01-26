@@ -4,8 +4,6 @@
 /source/__pycache__/
 */logs/*
 /logs/*
-*/models/*
-/models/*
 /.ipynb_checkpoints/*
 */Images/*
 /Images/*
@@ -13,3 +11,4 @@
 /Newspapers/*
 /Notices/*
 */Notices/*
+/source/models/datasets.npy

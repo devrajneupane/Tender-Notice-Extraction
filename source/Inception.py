@@ -3,7 +3,7 @@ from tensorflow import keras
 
 
 class InceptionUnit(keras.layers.Layer):
-    def __init__(self, filters = [64, 96, 16, 128, 32, 32], strides=1, activation="relu", **kwargs):
+    def __init__(self, filters = [16, 24, 4, 32, 8, 8], strides=1, activation="relu", **kwargs):
         super().__init__(**kwargs)
         self.filters = filters
         self.strides = strides
