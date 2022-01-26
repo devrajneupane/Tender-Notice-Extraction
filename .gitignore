@@ -21,6 +21,7 @@ logs/*
 
 # VScode settings
 */.vscode/*
+.vscode/*
 
 # chrome driver
 driver/*
