@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 import numpy as np
@@ -32,18 +33,23 @@ epoch = 20
 f = 3
 
 # remove all checkpoints if it exists
-try:
-    os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5")
-except:
-    pass
-try:
-    os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5")
-except:
-    pass
-try:
-    os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5")
-except:
-    pass
+# try:
+#     os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5")
+# except:
+#     pass
+# try:
+#     os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5")
+# except:
+#     pass
+# try:
+#     os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5")
+# except:
+#     pass
+
+files = os.listdir("../models")
+for file in files:
+    if file.startswith("checkpoint"):
+        os.remove(os.path.join(sys.path[0]), "models" ,file)
 
 X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.2, random_state=f)
 X_train, X_valid, y_train, y_valid = train_test_split(X_train_full, y_train_full, test_size=0.2, random_state=f)
