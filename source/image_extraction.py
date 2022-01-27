@@ -19,8 +19,6 @@ def extract_image():
         newspaper_count=0
         for newspaper in newspapers:
             newspaper_count+=1
-            if newspaper_count==20:
-                exit()
             print("Processing newspaper: %s ===================[%s/%s]"%(newspaper,newspaper_count,no_of_newspapers))
             if newspaper.endswith(".pdf"):
 
