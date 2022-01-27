@@ -9,6 +9,7 @@ Notices/*
 Datasets/*
 Screenshots/*
 Tender/*
+notTender/*
 
 # bytecode cache files
 */__pycache__/*
