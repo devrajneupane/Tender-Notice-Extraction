@@ -12,6 +12,8 @@
 /Notices/*
 */Notices/*
 /source/models/datasets.npy
+/source/models/datasets_old.npy
+/source/models/datasets2class.npy
 /Tender/*
 */Tender/*
 /notTender/*
