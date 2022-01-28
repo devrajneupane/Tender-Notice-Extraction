@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 import tensorflow as tf
 from tensorflow import keras
+import tensorflow_addons as tfa
 
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
@@ -28,8 +29,8 @@ X = np.array(X)
 y = np.array(y)
 
 early_stopping_cb = keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)
-epoch = 20
-f = 3
+epoch = 2
+f = 1
 
 # remove all checkpoints if it exists
 try:
@@ -48,42 +49,21 @@ except:
 X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.2, random_state=f)
 X_train, X_valid, y_train, y_valid = train_test_split(X_train_full, y_train_full, test_size=0.2, random_state=f)
 
+# model_resnet.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy",keras.metrics.Precision(), keras.metrics.Recall()])
+# model_googlenet.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy",keras.metrics.Precision(), keras.metrics.Recall()])
+# model_xception.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy",keras.metrics.Precision(), keras.metrics.Recall()])
+
+
 model_resnet = ResNet()
-model_googlenet = GoogleNet()
-model_xception = Xception()
-
-
-model_resnet.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy"])
-model_googlenet.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy"])
-model_xception.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy"])
-
+model_resnet.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy",keras.metrics.Precision(), keras.metrics.Recall(), tfa.metrics.F1Score(num_classes=2)])
 print("\n\nTraining ResNet\n\n")
 checkpoint_cb_resnet = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5', save_best_only=True)
 history_resnet = model_resnet.fit(X_train, y_train, epochs = epoch, validation_data = (X_valid, y_valid), callbacks = [checkpoint_cb_resnet], batch_size = 16)
 model_resnet = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5', custom_objects={'ResidualUnit': ResidualUnit})
 model_resnet.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_resnet_' + str(f) + '.h5')
 
-print("\n\nTraining GoogleNet\n\n")
-checkpoint_cb_googlenet = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', save_best_only=True)
-history_googlenet = model_googlenet.fit(X_train, y_train, epochs = epoch, validation_data = (X_valid, y_valid), callbacks = [checkpoint_cb_googlenet], batch_size = 16)
-model_googlenet = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', custom_objects={'InceptionUnit': InceptionUnit})
-model_googlenet.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_googlenet_' + str(f) + '.h5')
-
-print("\n\nTraining Xception\n\n")
-checkpoint_cb_xception = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', save_best_only=True)
-history_xception = model_xception.fit(X_train, y_train, epochs = epoch, validation_data = (X_valid, y_valid), callbacks = [checkpoint_cb_xception], batch_size = 16)
-model_xception = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', custom_objects={'XceptionUnit': XceptionUnit})
-model_xception.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_xception_' + str(f) + '.h5')
-
 print("\n\nEvaluating ResNet\n\n")
 model_resnet.evaluate(X_test, y_test)
-print("\n\nEvaluating GoogleNet\n\n")
-model_googlenet.evaluate(X_test, y_test)
-print("\n\nEvaluating Xception\n\n")
-model_xception.evaluate(X_test, y_test)
-
-
-# get training chart
 
 plt.plot(history_resnet.history['accuracy'], "-")
 plt.plot(history_resnet.history['val_accuracy'], ":")
@@ -93,26 +73,6 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Validation'], loc='lower right')
 plt.grid(True)
 plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\resnet_accuracy_' + str(f) + '.png')
-plt.clf()
-
-plt.plot(history_googlenet.history['accuracy'], "-")
-plt.plot(history_googlenet.history['val_accuracy'], ":")
-plt.title('GoogleNet Accuracy' + str(f))
-plt.ylabel('Accuracy')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='lower right')
-plt.grid(True)
-plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\googlenet_accuracy_' + str(f) + '.png')
-plt.clf()
-
-plt.plot(history_xception.history['accuracy'], "-")
-plt.plot(history_xception.history['val_accuracy'], ":")
-plt.title('Xception Accuracy'  + str(f))
-plt.ylabel('Accuracy')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='lower right')
-plt.grid(True)
-plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\xception_accuracy_' + str(f) + '.png')
 plt.clf()
 
 plt.plot(history_resnet.history['loss'], "-")
@@ -125,6 +85,29 @@ plt.grid(True)
 plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\resnet_loss_' + str(f) + '.png')
 plt.clf()
 
+tf.keras.backend.clear_session()
+
+model_googlenet = GoogleNet()
+model_googlenet.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy",keras.metrics.Precision(), keras.metrics.Recall(), tfa.metrics.F1Score(num_classes=2)])
+print("\n\nTraining GoogleNet\n\n")
+checkpoint_cb_googlenet = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', save_best_only=True)
+history_googlenet = model_googlenet.fit(X_train, y_train, epochs = epoch, validation_data = (X_valid, y_valid), callbacks = [checkpoint_cb_googlenet], batch_size = 16)
+model_googlenet = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', custom_objects={'InceptionUnit': InceptionUnit})
+model_googlenet.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_googlenet_' + str(f) + '.h5')
+
+print("\n\nEvaluating GoogleNet\n\n")
+model_googlenet.evaluate(X_test, y_test)
+
+plt.plot(history_googlenet.history['accuracy'], "-")
+plt.plot(history_googlenet.history['val_accuracy'], ":")
+plt.title('GoogleNet Accuracy' + str(f))
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='lower right')
+plt.grid(True)
+plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\googlenet_accuracy_' + str(f) + '.png')
+plt.clf()
+
 plt.plot(history_googlenet.history['loss'], "-")
 plt.plot(history_googlenet.history['val_loss'], ":")
 plt.title('GoogleNet Loss' + str(f))
@@ -135,7 +118,28 @@ plt.grid(True)
 plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\googlenet_loss_' + str(f) + '.png')
 plt.clf()
 
+tf.keras.backend.clear_session()
 
+model_xception = Xception()
+model_xception.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy",keras.metrics.Precision(), keras.metrics.Recall(), tfa.metrics.F1Score(num_classes=2)])
+print("\n\nTraining Xception\n\n")
+checkpoint_cb_xception = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', save_best_only=True)
+history_xception = model_xception.fit(X_train, y_train, epochs = epoch, validation_data = (X_valid, y_valid), callbacks = [checkpoint_cb_xception], batch_size = 16)
+model_xception = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', custom_objects={'XceptionUnit': XceptionUnit})
+model_xception.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_xception_' + str(f) + '.h5')
+
+print("\n\nEvaluating Xception\n\n")
+model_xception.evaluate(X_test, y_test)
+
+plt.plot(history_xception.history['accuracy'], "-")
+plt.plot(history_xception.history['val_accuracy'], ":")
+plt.title('Xception Accuracy'  + str(f))
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='lower right')
+plt.grid(True)
+plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\xception_accuracy_' + str(f) + '.png')
+plt.clf()
 
 plt.plot(history_xception.history['loss'], "-")
 plt.plot(history_xception.history['val_loss'], ":")
@@ -146,6 +150,40 @@ plt.legend(['Train', 'Validation'], loc='upper right')
 plt.grid(True)
 plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\xception_loss_' + str(f) + '.png')
 plt.clf()
+
+# plot f1 score
+
+# plt.plot(history_resnet.history['f1_score'], "-")
+# plt.plot(history_resnet.history['val_f1_score'], ":")
+# plt.title('ResNet F1 Score' + str(f))
+# plt.ylabel('F1 Score')
+# plt.xlabel('Epoch')
+# plt.legend(['Train', 'Validation', "try"], loc='upper right')
+# plt.grid(True)
+# plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\resnet_f1_score_' + str(f) + '.png')
+# plt.clf()
+
+# plt.plot(history_googlenet.history['f1_score'], "-")
+# plt.plot(history_googlenet.history['val_f1_score'], ":")
+# plt.title('GoogleNet F1 Score' + str(f))
+# plt.ylabel('F1 Score')
+# plt.xlabel('Epoch')
+# plt.legend(['Train', 'Validation'], loc='upper right')
+# plt.grid(True)
+# plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\googlenet_f1_score_' + str(f) + '.png')
+# plt.clf()
+
+# plt.plot(history_xception.history['f1_score'], "-")
+# plt.plot(history_xception.history['val_f1_score'], ":")
+# plt.title('Xception F1 Score' + str(f))
+# plt.ylabel('F1 Score')
+# plt.xlabel('Epoch')
+# plt.legend(['Train', 'Validation'], loc='upper right')
+# plt.grid(True)
+# plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\xception_f1_score_' + str(f) + '.png')
+# plt.clf()
+
+
    
 
 
