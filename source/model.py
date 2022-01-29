@@ -29,6 +29,7 @@ def ResNet():
     model_resnet.add(keras.layers.GlobalAveragePooling2D())
     model_resnet.add(keras.layers.Flatten())
     model_resnet.add(keras.layers.Dropout(0.4))
+    model_resnet.add(keras.layers.Dense(32, activation = "relu"))
     model_resnet.add(keras.layers.Dense(2, activation = "relu"))
     model_resnet.add(keras.layers.Dense(1, activation = "sigmoid"))
 
@@ -50,6 +51,7 @@ def GoogleNet():
     model_googlenet.add(keras.layers.GlobalAveragePooling2D())
     model_googlenet.add(keras.layers.Flatten())
     model_googlenet.add(keras.layers.Dropout(0.4))
+    model_googlenet.add(keras.layers.Dense(32, activation = "relu"))
     model_googlenet.add(keras.layers.Dense(2, activation = "relu"))
     model_googlenet.add(keras.layers.Dense(1, activation = "sigmoid"))
 
@@ -72,8 +74,9 @@ def Xception():
     model_xception.add(keras.layers.Activation("relu"))
     model_xception.add(keras.layers.Flatten())
     model_xception.add(keras.layers.Dropout(0.4))
-    model_xception.add(keras.layers.Dense(2, activation = "relu"))
-    model_xception.add(keras.layers.Dense(1, activation = "sigmoid"))
+    # model_xception.add(keras.layers.Dense(32, activation = "relu"))
+    model_xception.add(keras.layers.Dense(2, activation = "softmax"))
+    # model_xception.add(keras.layers.Dense(1, activation = "sigmoid"))
 
     return model_xception
 
