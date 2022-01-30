@@ -7,14 +7,19 @@ from dotenv import dotenv_values
 
 
 path = Path(sys.path[0])
-if sys.platform == "win32":
-    tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
-    tess.pytesseract.tesseract_cmd = tesseract_exec
+# if sys.platform == "win32":
+#     tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
+#     tess.pytesseract.tesseract_cmd = tesseract_exec
 
 try:
     with open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8") as dicx:
         try:
             os.mkdir(path.parent.joinpath("Tender"))
+
+        except FileExistsError:
+            pass
+        try:
+            os.mkdir(path.parent.joinpath("notTender"))
 
         except FileExistsError:
             pass
@@ -66,6 +71,10 @@ def tender_filter():
 
             if is_tender(image):
                 cv2.imwrite(f"./Tender/{img}", image)
+                print(f"\t\t==> {img} is Tender")
+            else:
+                cv2.imwrite(f"./notTender/{img}", image)
+                print(f"\t\t==> {img} is not Tender")
                 # os.remove(f"./Notices/{folder}/{img}")
     #         os.remove(path="./Notices/"+folder+"/"+img)
     #     os.rmdir("./Notices/"+folder)

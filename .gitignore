@@ -12,6 +12,11 @@ Screenshots/*
 Tender/*
 notTender/*
 /source/models/datasets.npy
+subimage/*
+Tender/*    
+notTender/*
+notNotices/*
+Notices/*
 
 # bytecode cache files
 */__pycache__/*

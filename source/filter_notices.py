@@ -12,12 +12,12 @@ from Xception import XceptionUnit
 from model import ResNet, GoogleNet, Xception
 # from model import get_model
 try:
-    os.mkdir("./Tender")
+    os.mkdir("./Notices")
 except FileExistsError:
     pass
 
 try:
-    os.mkdir("./notTender")
+    os.mkdir("./notNotices")
 except FileExistsError:
     pass
 
@@ -45,17 +45,17 @@ def resize(img):
 
 
 def applyCNN():
-    dirList = os.listdir("./Notices/")
-    for dir in dirList:
-        fileList = os.listdir("./Notices/"+dir+"/")
+    dirList = os.listdir("./subimage/")
+    for dirn in dirList:
+        fileList = os.listdir("./subimage/"+dirn+"/")
         for file in fileList:
-            # img = tf.keras.utils.load_img(f"./Notices/{dir}/{file}", grayscale=False, color_mode="grayscale")
-            img = cv2.imread(f"./Notices/{dir}/{file}")
+            # img = tf.keras.utils.load_img(f"./subimage/{dir}/{file}", grayscale=False, color_mode="grayscale")
+            img = cv2.imread(f"./subimage/{dirn}/{file}")
             temp=img.copy()
             img = resize(img)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img = np.array(img, dtype=np.float32)
-            print(img.shape)
+            
             img = img.reshape(1, 224, 224, 1)
             img = img / 255.0
             model = Xception()
@@ -63,23 +63,35 @@ def applyCNN():
             pred = model.predict(img)
             # print(pred)
             if pred[0][0] < pred[0][1]:
-                print("Notice is for Tender")
-                print(f"{dir}/{file}")
-                cv2.imwrite("./Tender/"+file,temp)
+                # filename = str(output_path.joinpath(page.split(".")[0] + "_" + str(count) + '.png'))
+                try: 
+                    os.mkdir(path=f"./Notices/{dirn}")
+                except FileExistsError:
+                    pass
+                filename="./Notices/"+dirn+"/"+file
+                cv2.imwrite(filename, temp)
+                # print(dirn)
+                print(f"{file} is Notice")
             else:
-                print("Notice is not tender")
-                print(f"{dir}/{file}")
-                cv2.imwrite("./notTender/"+file, temp)
+                # print(dirn)
+                try: 
+                    os.mkdir(path=f"./notNotices/{dirn}")
+                except FileExistsError:
+                    pass
+                filename="./notNotices/"+dirn+"/"+file
+                cv2.imwrite(filename, temp)
+                print(f"{file} is not Notice")
+      
 
 
 
 
 def applyCNN1():
-    dirList = os.listdir("./Notices/")
+    dirList = os.listdir("./subimage/")
     for dir in dirList:
-        fileList = os.listdir("./Notices/"+dir+"/")
+        fileList = os.listdir("./subimage/"+dir+"/")
         for file in fileList:
-            img = tf.keras.utils.load_img(f"./Notices/{dir}/{file}", grayscale=False, color_mode="grayscale")
+            img = tf.keras.utils.load_img(f"./subimage/{dir}/{file}", grayscale=False, color_mode="grayscale")
             
             img = np.array(img, dtype=np.float32)
             temp=img.copy()
