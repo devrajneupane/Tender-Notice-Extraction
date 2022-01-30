@@ -1,40 +1,39 @@
 import os
 import fitz
+from pathlib import Path
+
 
 def extract_image():
-    try:
-        os.mkdir("./Newspapers/")
-    except FileExistsError:
-        pass
+    path = Path(__file__).parent
+    if not path.parent.joinpath("Images").exists():
+        os.mkdir(path.parent.joinpath("Images"))
 
-    try:
-        os.mkdir("./Images")
-    except FileExistsError:
-        pass
+    epaper_dir = path.parent.joinpath("Newspapers")
+    indv_dir = os.listdir(epaper_dir)
 
-    newspaper_folder=os.listdir("./Newspapers/")
-    for news in newspaper_folder:
-        newspapers=os.listdir(f"./Newspapers/{news}/")
-        no_of_newspapers=len(newspapers)
-        newspaper_count=0
+    for source in indv_dir:
+        newspapers = os.listdir(path.joinpath(epaper_dir, source))
+        no_of_newspapers = len(newspapers)
+        newspaper_count = 0
+
         for newspaper in newspapers:
-            newspaper_count+=1
-            print("Processing newspaper: %s ===================[%s/%s]"%(newspaper,newspaper_count,no_of_newspapers))
-            if newspaper.endswith(".pdf"):
+            newspaper_count += 1
+            print(f"Processing newspaper: {newspaper} ===================[{newspaper_count}/{no_of_newspapers}]")
 
-                doc = fitz.open(os.path.join(f"./Newspapers/{news}",newspaper))  
-                try:
-                    output_path="./Images/"+newspaper[:-4]+"/"
-                    os.mkdir(output_path)
-                except FileExistsError:
-                    pass          
-                for i in range (0,doc.page_count):
-                    page=doc.load_page(i)
-                    pix = page.get_pixmap(matrix=fitz.Matrix(5,5))
-                    output = newspaper[:-4]+"_"+str(i)+".jpg"
-                    print("\t==>Image conversion of page [%s/%s]"%(i+1,doc.page_count))
-                    pix.save((output_path+output))
-                doc.close()
-        # os.remove("./Newspapers/"+newspaper)
-if __name__=="__main__":
+            if newspaper.endswith(".pdf"):
+                with fitz.open(epaper_dir.joinpath(source, newspaper)) as doc:
+                    output_path = path.parent.joinpath("Images", newspaper[:-4])
+
+                    if not os.path.exists(output_path):
+                        os.mkdir(output_path)
+
+                    for i in range(0, doc.page_count):
+                        page = doc.load_page(i)
+                        pix = page.get_pixmap(matrix=fitz.Matrix(5, 5))
+                        output = newspaper[:-4] + "_" + str(i) + ".jpg"
+                        print(f"\t==>Image conversion of page [{i + 1}/{doc.page_count}]")
+                        pix.save(output_path.joinpath(output))
+
+
+if __name__ == "__main__":
     extract_image()

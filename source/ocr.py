@@ -1,18 +1,20 @@
 import os
 import sys
 import cv2
+from pathlib import Path
 import pytesseract as tess
 from dotenv import dotenv_values
 
 
+path = Path(sys.path[0])
 if sys.platform == "win32":
-    tesseract_exec = dotenv_values(os.path.join(sys.path[0], ".env"))["TESSERACT_EXECUTABLE"]
+    tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
     tess.pytesseract.tesseract_cmd = tesseract_exec
 
 try:
-    with open("dict.txt", "r", encoding="utf-8") as dicx:
+    with open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8") as dicx:
         try:
-            os.mkdir("Tender")
+            os.mkdir(path.parent.joinpath("Tender"))
 
         except FileExistsError:
             pass
@@ -50,7 +52,7 @@ def is_tender(img):
 
 
 def tender_filter():
-    folder_list = os.listdir("./Notices/")
+    folder_list = os.listdir(path.parent.joinpath("Notices/"))
     folder_count = 0
     for folder in folder_list:
         folder_count += 1
