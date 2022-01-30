@@ -80,4 +80,5 @@ class InceptionUnit(keras.layers.Layer):
 
 if __name__ == "__main__":
     inception = InceptionUnit()
-    inception.build_graph(to_file="D:\Programming\Python\Tender-Notice-Extraction\img\Inception.png")
+    inception.build_graph(to_file="D:\Programming\Python\Tender-Notice-Extraction\img\Inception.png",
+                            show_shapes=True, show_dtype=True, show_layer_names=True, show_layer_activations=True)

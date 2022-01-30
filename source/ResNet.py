@@ -47,4 +47,4 @@ class ResidualUnit(keras.layers.Layer):
         
 if __name__ == "__main__":
     model = ResidualUnit(filters=64, strides=1, activation="relu")
-    model.build_graph(to_file="D:\Programming\Python\Tender-Notice-Extraction\img\ResNet.png")
+    model.build_graph(to_file="D:\Programming\Python\Tender-Notice-Extraction\img\ResNet_Stride1.png",  show_shapes=True, show_dtype=True, show_layer_names=True, show_layer_activations=True)
