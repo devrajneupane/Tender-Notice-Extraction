@@ -2,8 +2,8 @@ import cv2
 import os
 from pathlib import Path
 
-THRESH_VALUE = 100
-TUNING_FACTOR = 0.001
+THRESH_VALUE = 60
+TUNING_FACTOR = 0.001   #default 0.001
 MIN_WIDTH = 100  # minimum width of the reactangle to be extracted
 MIN_HEIGHT = 100  # minimum height of the reactangle to be extracted
 # MAX_ASPECT_RATIO=3
@@ -53,7 +53,7 @@ def extract_notice():
          print("\t==>Extracting Notice from page [%s/%s]" % (page_count, len(newspaper_pages)))
          contour_subimage=list()
          for contour in contours:
-            poly = cv2.approxPolyDP(contour, TUNING_FACTOR * cv2.arcLength(contour, True), True)
+            poly = cv2.approxPolyDP(contour, TUNING_FACTOR * cv2.arcLength(contour, False), False)
             x, y, w, h = cv2.boundingRect(contour)
             if len(poly) ==4 and w >= MIN_WIDTH and h >= MIN_HEIGHT and w <= MAX_WIDTH and h <= MAX_HEIGHT:
                contour_subimage.append(contour)
@@ -72,9 +72,13 @@ def extract_notice():
             if not nested:
                count += 1
                cropped_image = img[y: y + h, x: x + w]
+               # cv2.drawContours(img, contour_subimage, -1, (0,0,224), 30)
                filename = str(output_path.joinpath(page.split(".")[0] + "_" + str(count) + '.png'))
                cv2.imwrite(filename, cropped_image)
+         
             i=i+1
+         # cv2.imwrite(filename, img)
+         
 
 
 if __name__ == "__main__":

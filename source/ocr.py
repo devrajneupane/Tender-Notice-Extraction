@@ -56,6 +56,7 @@ def is_tender(img):
         return False
 
 
+
 def tender_filter():
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
     folder_count = 0

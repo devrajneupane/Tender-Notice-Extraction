@@ -12,7 +12,7 @@ def main():
     # get_resource()
     # read pdf form Newspapers folder
     # convert pdf to jpg
-    # image_extraction.extract_image()
+    image_extraction.extract_image()
     # extract notices from jpg
     notice_extraction.extract_notice()
 
