@@ -37,7 +37,7 @@ def extract_notice():
 
       print(f"Processing Newspaper: {newspaper} ===================[{newspaper_count}/{no_of_newspapers}]")
       newspaper_path = path.parent.joinpath("Images", newspaper)
-      newspaper_pages = os.listdir(newspaper_path)
+      newspaper_pages = sorted(os.listdir(newspaper_path))
       count = 0
       page_count = 0
       for page in newspaper_pages:
@@ -70,10 +70,10 @@ def extract_notice():
                   break
             
             if not nested:
-               count += 1
+               count =count+1
                cropped_image = img[y: y + h, x: x + w]
                # cv2.drawContours(img, contour_subimage, -1, (0,0,224), 30)
-               filename = str(output_path.joinpath(page.split(".")[0] + "_" + str(count) + '.png'))
+               filename = str(output_path.joinpath(page.split(".")[0] +"_id_"+str(count) + '.png'))
                cv2.imwrite(filename, cropped_image)
          
             i=i+1

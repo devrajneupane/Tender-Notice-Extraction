@@ -17,7 +17,7 @@ Tender/*
 notTender/*
 notNotices/*
 Notices/*
-
+img/*
 # bytecode cache files
 */__pycache__/*
 

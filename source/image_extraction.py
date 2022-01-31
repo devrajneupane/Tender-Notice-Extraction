@@ -30,7 +30,7 @@ def extract_image():
                     for i in range(0, doc.page_count):
                         page = doc.load_page(i)
                         pix = page.get_pixmap(matrix=fitz.Matrix(5, 5))
-                        output = newspaper[:-4] + "_" + str(i) + ".jpg"
+                        output = newspaper[:-4] + "_pg_" + str(i+1) + ".jpg"
                         print(f"\t==>Image conversion of page [{i + 1}/{doc.page_count}]")
                         pix.save(output_path.joinpath(output))
 
