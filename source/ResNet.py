@@ -15,6 +15,7 @@ class ResidualUnit(keras.layers.Layer):
             keras.layers.Conv2D(filters, 3, strides = 1, padding = "same", use_bias = False),
             keras.layers.BatchNormalization()
         ]
+        self.concat = keras.layers.Concatenate()
         self.skip_layers = []
         if strides > 1:
             self.skip_layers = [
@@ -29,7 +30,9 @@ class ResidualUnit(keras.layers.Layer):
         skip_z = inputs
         for layer in self.skip_layers:
             skip_z = layer(skip_z)
-        return self.activation(z + skip_z)
+        z = self.concat([z, skip_z])
+        return z
+        # return self.activation(z + skip_z)
 
     def build_graph(self, dim = (224, 224, 64), to_file='ResNet.png', **kwargs):
         x = keras.layers.Input(shape=(dim))
@@ -48,3 +51,4 @@ class ResidualUnit(keras.layers.Layer):
 if __name__ == "__main__":
     model = ResidualUnit(filters=64, strides=1, activation="relu")
     model.build_graph(to_file="D:\Programming\Python\Tender-Notice-Extraction\img\ResNet_Stride1.png",  show_shapes=True, show_dtype=True, show_layer_names=True, show_layer_activations=True)
+    print("Image saved")

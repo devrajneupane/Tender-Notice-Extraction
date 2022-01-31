@@ -133,6 +133,17 @@ def model_check():
     plt.grid(True)
     plt.show()
 
+
+
 if __name__ == '__main__':
-    model_check()
+    # build model architecture and save its image
+    modelR = ResNet()
+    modelG = GoogleNet()
+    modelX = Xception()
+
+    # keras.utils.plot_model(modelR, to_file='D:\Programming\Python\Tender-Notice-Extraction\source\models\ResNetTop.png',  show_shapes=True, show_dtype=True, show_layer_names=True, show_layer_activations=True)
+    # keras.utils.plot_model(modelG, to_file='D:\Programming\Python\Tender-Notice-Extraction\source\models\GoogleNetTop.png',  show_shapes=True, show_dtype=True, show_layer_names=True, show_layer_activations=True)
+    # keras.utils.plot_model(modelX, to_file='D:\Programming\Python\Tender-Notice-Extraction\source\models\XceptionTop.png',  show_shapes=True, show_dtype=True, show_layer_names=True, show_layer_activations=True)
+
+    print(modelX.summary())
 
