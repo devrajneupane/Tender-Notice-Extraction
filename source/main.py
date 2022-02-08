@@ -2,8 +2,8 @@ import time
 import image_extraction
 import notice_extraction
 from get_resources import get_resource
-import filter_notices
-import ocr
+# import filter_notices
+# import ocr
 
 
 def main():
@@ -12,12 +12,12 @@ def main():
     # get_resource()
     # read pdf form Newspapers folder
     # convert pdf to jpg
-    image_extraction.extract_image()
+    # image_extraction.extract_image()
     # extract notices from jpg
     notice_extraction.extract_notice()
 
-    filter_notices.applyCNN()
-    ocr.tender_filter()
+    # filter_notices.applyCNN()
+    # ocr.tender_filter()
     elapsed = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
     print(f"Time Elapsed: {elapsed}")
     # print("Total elapsed time: ",end-start)
