@@ -10,7 +10,7 @@ MIN_HEIGHT = 100  # minimum height of the reactangle to be extracted
 # MAX_ASPECT_RATIO=3
 MAX_WIDTH = 6000  # maximum width of the reactangle to be extracted
 MAX_HEIGHT = 6000  # maximum height of the reactangle to be extracted
-CPU_COUNT=mp.cpu_count()*2
+CPU_COUNT=mp.cpu_count()
 
 
 def page_to_notice(path, newspaper, page, output_path, count, page_count,no_of_newspaper_pages):

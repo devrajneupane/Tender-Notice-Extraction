@@ -3,7 +3,7 @@ import fitz
 from pathlib import Path
 import multiprocessing as mp
 
-CPU_COUNT = mp.cpu_count()*2
+CPU_COUNT = mp.cpu_count()
 
 def paper_to_image(epaper_dir,source,newspaper,path):
     with fitz.open(epaper_dir.joinpath(source, newspaper)) as doc:
