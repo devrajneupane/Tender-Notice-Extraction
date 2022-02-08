@@ -4,7 +4,9 @@ import cv2
 from pathlib import Path
 import pytesseract as tess
 from dotenv import dotenv_values
+import multiprocessing as mp
 
+CPU_COUNT=mp.cpu_count()
 
 path = Path(sys.path[0])
 # if sys.platform == "win32":
@@ -34,12 +36,13 @@ except FileNotFoundError:
 # print(dic[3]=="bids")
 
 
-def is_tender(img):
+def is_tender(folder,img):
     """
     img in grayscale format for better performance
     """
+    image = cv2.imread("./Notices/" + folder + "/" + img, 0)
     strike = 0
-    text = tess.image_to_data(img, lang="eng+nep", timeout=240)
+    text = tess.image_to_data(image, lang="eng+nep", timeout=240)
     for x, b in enumerate(text.splitlines()):
         if x != 0:
             b = b.split()
@@ -50,12 +53,49 @@ def is_tender(img):
                 res = s1.intersection(s2)
                 if len(res) != 0:
                     strike += 1
-    if strike >= 1:
-        return True
+                    print("\t\tStrike word: ", res)
+    if strike >=1:
+        cv2.imwrite(f"./Tender/{img}", image)
+        print(f"\t\t==> {img} is Tender")
     else:
-        return False
+        cv2.imwrite(f"./notTender/{img}", image)
+        print(f"\t\t==> {img} is not Tender")
 
 
+def tender_filter1():
+    folder_list = os.listdir(path.parent.joinpath("Notices/"))
+    folder_count = 0
+    for folder in folder_list:
+        folder_count += 1
+        print(f"Processing Newspaper: {folder}=====================[{folder_count}/{len(folder_list)}]")
+        img_list = os.listdir("./Notices/" + folder + "/")
+        image_count = 0
+        CPU_USED = 0
+        processs=[]
+        for img in img_list:
+            image_count += 1
+            print(f"\t==> Processing {img} for tender [{image_count}/{len(img_list)}]")
+            CPU_USED+=1                 
+            if CPU_USED<=CPU_COUNT: 
+                process=mp.Process(target=is_tender, args=(folder,img))
+                processs.append(process)
+                print("starting process : %s" % process)
+                # pool.apply_async(page_to_image,args=(page, output_path,newspaper,i,page_count))
+            if CPU_USED==CPU_COUNT or image_count==len(img_list):
+                for process in processs:
+                    process.start()
+                for process in processs:
+                    process.join()
+                    process.terminate()
+                processs=[]
+                CPU_USED=0
+                print("One iteration completed")
+
+            
+                # os.remove(f"./Notices/{folder}/{img}")
+    #         os.remove(path="./Notices/"+folder+"/"+img)
+    #     os.rmdir("./Notices/"+folder)
+    # os.rmdir("./Notices")
 
 def tender_filter():
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
@@ -68,14 +108,8 @@ def tender_filter():
         for img in img_list:
             image_count += 1
             print(f"\t==> Processing {img} for tender [{image_count}/{len(img_list)}]")
-            image = cv2.imread("./Notices/" + folder + "/" + img, 0)
-
-            if is_tender(image):
-                cv2.imwrite(f"./Tender/{img}", image)
-                print(f"\t\t==> {img} is Tender")
-            else:
-                cv2.imwrite(f"./notTender/{img}", image)
-                print(f"\t\t==> {img} is not Tender")
+            is_tender(folder, img)
+            
                 # os.remove(f"./Notices/{folder}/{img}")
     #         os.remove(path="./Notices/"+folder+"/"+img)
     #     os.rmdir("./Notices/"+folder)
