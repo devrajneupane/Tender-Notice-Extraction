@@ -6,6 +6,7 @@ import pytesseract as tess
 from dotenv import dotenv_values
 import multiprocessing as mp
 from sql import sql_insert, sql_initialize
+import shutil
 
 CPU_COUNT=mp.cpu_count()
 

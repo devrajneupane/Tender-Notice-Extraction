@@ -5,12 +5,20 @@ from get_resources import get_resource
 import filter_notices
 import ocr
 from datetime import date
+from sql import sql_initialize, sql_query_date
 
 
 def main():
     start_time = time.time()
+    sql_initialize()
     # get pdf from websites and store in /Newspaper folder
-    date=date.today()
+    dat=date.today().strftime("%Y-%m-%d")
+    temp=sql_query_date()
+    if not temp:
+        temp=temp[0].strftime("%Y-%m-%d")
+        if temp==dat:
+            print("bye bye")
+            return
     
 
     get_resource()
