@@ -80,7 +80,7 @@ def is_tender(folder,img):
             pass
         
         cv2.imwrite(f"./Tender/{date}/{folder[:-11]}/{img}", image)
-        sql_insert(date,folder[:-11], img.split("_pg_")[1].split("_id")[0], img)
+        sql_insert(img.split("_id_")[1].split('.')[0],date,folder[:-11], img.split("_pg_")[1].split("_id")[0], img)
         print(f"\t\t==> {img} is Tender")
     else:
         try:

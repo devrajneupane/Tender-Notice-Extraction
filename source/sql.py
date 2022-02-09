@@ -28,6 +28,7 @@ def sql_initialize():
     # create a table
     myquery = "CREATE TABLE IF NOT EXISTS tender_details(\
                 id int AUTO_INCREMENT PRIMARY KEY,\
+                img_id int,\
                 dat DATE,\
                 newspaper varchar(255),\
                 page int,\
@@ -35,7 +36,7 @@ def sql_initialize():
 
     mycursor.execute(myquery)
 
-def sql_insert(dat, newspaper, page, imageName):
+def sql_insert(img_id,dat, newspaper, page, imageName):
     try:
         mydb = mysql.connector.connect(
             host="localhost",
@@ -48,8 +49,8 @@ def sql_insert(dat, newspaper, page, imageName):
     mycursor = mydb.cursor()
     myquery = "USE tender"
     mycursor.execute(myquery)
-    myquery = "INSERT INTO tender_details (dat, newspaper, page, imageName) VALUES (%s, %s, %s, %s)"
-    mycursor.execute(myquery, (dat, newspaper, page, imageName))
+    myquery = "INSERT INTO tender_details (img_id,dat, newspaper, page, imageName) VALUES (%s,%s, %s, %s, %s)"
+    mycursor.execute(myquery, (img_id,dat, newspaper, page, imageName))
     mydb.commit()
     print(mycursor.rowcount, "record inserted.")
 
