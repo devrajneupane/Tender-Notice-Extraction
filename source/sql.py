@@ -1,13 +1,19 @@
 import mysql.connector
+from pathlib import Path
+from dotenv import dotenv_values
 
+path = Path(__file__).parent
+tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
+USER_NAME="anuj"
+USER_PASS="anuj123"
 
 def sql_initialize():
     # Connect to the database
     try:
         mydb = mysql.connector.connect(
             host="localhost",
-            user="root",
-            passwd="dbms123",
+            user=USER_NAME,
+            passwd=USER_PASS,
         )
     except mysql.connector.Error as err:
         print(err)
@@ -33,8 +39,8 @@ def sql_insert(dat, newspaper, page, imageName):
     try:
         mydb = mysql.connector.connect(
             host="localhost",
-            user="root",
-            passwd="dbms123",
+            user=USER_NAME,
+            passwd=USER_PASS,
         )
     except mysql.connector.Error as err:
         print(err)

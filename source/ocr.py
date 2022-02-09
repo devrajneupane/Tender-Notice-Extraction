@@ -90,7 +90,7 @@ def is_tender(folder,img):
         print(f"\t\t==> {img} is not Tender")
 
 
-def tender_filter1():
+def tender_filter():
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
     folder_count = 0
     sql_initialize()
@@ -119,6 +119,31 @@ def tender_filter1():
                 processs=[]
                 CPU_USED=0
                 print("One iteration completed")
+    try:
+        shutil.rmtree(path.parent.joinpath("Newspapers"))
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+    try:
+        shutil.rmtree(path.parent.joinpath("Images"))
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+    try:
+        shutil.rmtree(path.parent.joinpath("Notices"))
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+    try:
+        shutil.rmtree(path.parent.joinpath("notNotices"))
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+    try:
+        shutil.rmtree(path.parent.joinpath("notTender"))
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+    try:
+        shutil.rmtree(path.parent.joinpath("subimage"))
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
 
             
                 # os.remove(f"./Notices/{folder}/{img}")
@@ -126,7 +151,7 @@ def tender_filter1():
     #     os.rmdir("./Notices/"+folder)
     # os.rmdir("./Notices")
 
-def tender_filter():
+def tender_filter1():
     
     sql_initialize()
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
@@ -147,5 +172,6 @@ def tender_filter():
     # os.rmdir("./Notices")
 
 
+
 if __name__ == "__main__":
-    tender_filter1()
+    tender_filter()

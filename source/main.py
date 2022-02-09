@@ -4,12 +4,16 @@ import notice_extraction
 from get_resources import get_resource
 import filter_notices
 import ocr
+from datetime import date
 
 
 def main():
     start_time = time.time()
     # get pdf from websites and store in /Newspaper folder
-    # get_resource()
+    date=date.today()
+    
+
+    get_resource()
     # read pdf form Newspapers folder
     # convert pdf to jpg
     image_extraction.extract_image()

@@ -18,6 +18,7 @@ def paper_to_image(epaper_dir,source,newspaper,path):
             output = newspaper[:-4] + "_pg_" + str(i+1) + ".jpg"
             print(f"\t==>Image conversion of page [{i + 1}/{doc.page_count}]")
             pix.save(output_path.joinpath(output))
+        
 
 def extract_image():
     path = Path(__file__).parent
@@ -28,7 +29,7 @@ def extract_image():
     indv_dir = os.listdir(epaper_dir)
     all_newspapers=[]
     for source in indv_dir:
-        newspapers = os.listdir(path.joinpath(epaper_dir, source))
+        newspapers = os.listdir(path.parent.joinpath(epaper_dir, source))
         
         for newspaper in newspapers:
             #make list of newspaper,source
