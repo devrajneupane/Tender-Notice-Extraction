@@ -11,9 +11,9 @@ CPU_COUNT=mp.cpu_count()
 
 
 path = Path(sys.path[0])
-# if sys.platform == "win32":
-#     tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
-#     tess.pytesseract.tesseract_cmd = tesseract_exec
+if sys.platform == "win32":
+    tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
+    tess.pytesseract.tesseract_cmd = tesseract_exec
 
 try:
     with open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8") as dicx:
@@ -93,6 +93,7 @@ def is_tender(folder,img):
 def tender_filter1():
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
     folder_count = 0
+    sql_initialize()
     for folder in folder_list:
         folder_count += 1
         print(f"Processing Newspaper: {folder}=====================[{folder_count}/{len(folder_list)}]")
@@ -147,4 +148,4 @@ def tender_filter():
 
 
 if __name__ == "__main__":
-    tender_filter()
+    tender_filter1()

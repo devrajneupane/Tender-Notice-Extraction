@@ -7,7 +7,7 @@ def sql_initialize():
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            passwd="",
+            passwd="dbms123",
         )
     except mysql.connector.Error as err:
         print(err)
@@ -34,7 +34,7 @@ def sql_insert(dat, newspaper, page, imageName):
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            passwd="",
+            passwd="dbms123",
         )
     except mysql.connector.Error as err:
         print(err)
