@@ -6,15 +6,17 @@ import filter_notices
 import ocr
 from datetime import date
 from sql import sql_initialize, sql_query_date
+from ocr import clean_folders
 
 
 def main():
     start_time = time.time()
+    clean_folders()
     sql_initialize()
     # get pdf from websites and store in /Newspaper folder
     dat=date.today().strftime("%Y-%m-%d")
     temp=sql_query_date()
-    if not temp:
+    if temp:
         temp=temp[0].strftime("%Y-%m-%d")
         if temp==dat:
             print("bye bye")

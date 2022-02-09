@@ -53,5 +53,24 @@ def sql_insert(dat, newspaper, page, imageName):
     mydb.commit()
     print(mycursor.rowcount, "record inserted.")
 
+
+def sql_query_date():
+    try:
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user=USER_NAME,
+            passwd=USER_PASS,
+        )
+    except mysql.connector.Error as err:
+        print(err)
+
+    mycursor = mydb.cursor()
+    myquery = "USE tender"
+    mycursor.execute(myquery)
+    myquery="SELECT dat FROM tender_details ORDER BY id DESC LIMIT 1"
+    mycursor.execute(myquery)
+    for x in mycursor:
+        return x
+
 # myquery = "select * from tender_details"
 # mycursor.execute(myquery)

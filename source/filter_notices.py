@@ -13,15 +13,7 @@ from Xception import XceptionUnit
 from model import ResNet, GoogleNet, Xception
 import multiprocessing as mp
 # from model import get_model
-try:
-    os.mkdir("./Notices")
-except FileExistsError:
-    pass
 
-try:
-    os.mkdir("./notNotices")
-except FileExistsError:
-    pass
 
 def resize(img):
     old_image_width, old_image_height, channels = img.shape
@@ -47,6 +39,15 @@ def resize(img):
 
 
 def applyCNN():
+    try:
+        os.mkdir("./Notices")
+    except FileExistsError:
+        pass
+
+    try:
+        os.mkdir("./notNotices")
+    except FileExistsError:
+        pass
     dirList = os.listdir("./subimage/")
     for dirn in dirList:
         fileList = os.listdir("./subimage/"+dirn+"/")

@@ -9,43 +9,48 @@ from sql import sql_insert, sql_initialize
 import shutil
 
 CPU_COUNT=mp.cpu_count()
-
+dic=None
 
 path = Path(sys.path[0])
 if sys.platform == "win32":
     tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
     tess.pytesseract.tesseract_cmd = tesseract_exec
 
-try:
-    with open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8") as dicx:
-        try:
-            os.mkdir(path.parent.joinpath("Tender"))
-            
-
-        except FileExistsError:
-            pass
-        try:
-            os.mkdir(path.parent.joinpath("notTender"))
-            
-
-        except FileExistsError:
-            pass
-
-        # print(dicx.read())
-        dic = dicx.read().lower().splitlines()
-
-except FileNotFoundError:
-    print("dict.txt not found")
-    exit()
 
 # print(dic[3]=="bids")
+
+def clean_folders():
+    try:
+        shutil.rmtree(path.parent.joinpath("Newspapers"))
+    except OSError as e:
+        pass
+    try:
+        shutil.rmtree(path.parent.joinpath("Images"))
+    except OSError as e:
+        pass
+    try:
+        shutil.rmtree(path.parent.joinpath("Notices"))
+    except OSError as e:
+       pass
+    try:
+        shutil.rmtree(path.parent.joinpath("notNotices"))
+    except OSError as e:
+        pass
+    try:
+        shutil.rmtree(path.parent.joinpath("notTender"))
+    except OSError as e:
+        pass
+    try:
+        shutil.rmtree(path.parent.joinpath("subimage"))
+    except OSError as e:
+        pass
 
 
 def is_tender(folder,img):
     """
     img in grayscale format for better performance
     """
-
+    global dic
     image = cv2.imread("./Notices/" + folder + "/" + img, 0)
     strike = 0
     text = tess.image_to_data(image, lang="eng+nep", timeout=240)
@@ -79,12 +84,12 @@ def is_tender(folder,img):
         print(f"\t\t==> {img} is Tender")
     else:
         try:
-            os.mkdir(path.parent.joinpath("Tender/{}".format(date)))
+            os.mkdir(path.parent.joinpath("notTender/{}".format(date)))
             
         except FileExistsError:
             pass
         try:
-            os.mkdir(path.parent.joinpath("Tender/{}/{}".format(date,folder[:-11])))
+            os.mkdir(path.parent.joinpath("notTender/{}/{}".format(date,folder[:-11])))
         except FileExistsError:
             pass
         cv2.imwrite(f"./notTender/{date}/{folder[:-11]}/{img}", image)
@@ -92,6 +97,29 @@ def is_tender(folder,img):
 
 
 def tender_filter():
+    global dic
+    try:
+        with open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8") as dicx:
+            try:
+                os.mkdir(path.parent.joinpath("Tender"))
+                
+
+            except FileExistsError:
+                pass
+            try:
+                os.mkdir(path.parent.joinpath("notTender"))
+                
+
+            except FileExistsError:
+                pass
+
+            # print(dicx.read())
+            dic = dicx.read().lower().splitlines()
+
+    except FileNotFoundError:
+        print("dict.txt not found")
+        exit()
+
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
     folder_count = 0
     sql_initialize()
@@ -120,37 +148,15 @@ def tender_filter():
                 processs=[]
                 CPU_USED=0
                 print("One iteration completed")
-    try:
-        shutil.rmtree(path.parent.joinpath("Newspapers"))
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
-    try:
-        shutil.rmtree(path.parent.joinpath("Images"))
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
-    try:
-        shutil.rmtree(path.parent.joinpath("Notices"))
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
-    try:
-        shutil.rmtree(path.parent.joinpath("notNotices"))
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
-    try:
-        shutil.rmtree(path.parent.joinpath("notTender"))
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
-    try:
-        shutil.rmtree(path.parent.joinpath("subimage"))
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
-
+    
+    clean_folders()
 
             
                 # os.remove(f"./Notices/{folder}/{img}")
     #         os.remove(path="./Notices/"+folder+"/"+img)
     #     os.rmdir("./Notices/"+folder)
     # os.rmdir("./Notices")
+
 
 def tender_filter1():
     
