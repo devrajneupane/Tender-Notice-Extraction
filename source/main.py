@@ -9,7 +9,7 @@ import ocr
 def main():
     start_time = time.time()
     # get pdf from websites and store in /Newspaper folder
-    get_resource()
+    # get_resource()
     # read pdf form Newspapers folder
     # convert pdf to jpg
     image_extraction.extract_image()

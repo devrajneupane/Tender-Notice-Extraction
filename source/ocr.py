@@ -5,8 +5,10 @@ from pathlib import Path
 import pytesseract as tess
 from dotenv import dotenv_values
 import multiprocessing as mp
+from sql import sql_insert, sql_initialize
 
 CPU_COUNT=mp.cpu_count()
+
 
 path = Path(sys.path[0])
 # if sys.platform == "win32":
@@ -17,11 +19,13 @@ try:
     with open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8") as dicx:
         try:
             os.mkdir(path.parent.joinpath("Tender"))
+            
 
         except FileExistsError:
             pass
         try:
             os.mkdir(path.parent.joinpath("notTender"))
+            
 
         except FileExistsError:
             pass
@@ -40,6 +44,7 @@ def is_tender(folder,img):
     """
     img in grayscale format for better performance
     """
+
     image = cv2.imread("./Notices/" + folder + "/" + img, 0)
     strike = 0
     text = tess.image_to_data(image, lang="eng+nep", timeout=240)
@@ -54,11 +59,34 @@ def is_tender(folder,img):
                 if len(res) != 0:
                     strike += 1
                     print("\t\tStrike word: ", res)
+    date=folder[-10:]
+    YMD=date.split("-")
     if strike >=1:
-        cv2.imwrite(f"./Tender/{img}", image)
+
+        try:
+            os.mkdir(path.parent.joinpath("Tender/{}".format(date)))
+            
+        except FileExistsError:
+            pass
+        try:
+            os.mkdir(path.parent.joinpath("Tender/{}/{}".format(date,folder[:-11])))
+        except FileExistsError:
+            pass
+        
+        cv2.imwrite(f"./Tender/{date}/{folder[:-11]}/{img}", image)
+        sql_insert(date,folder[:-11], img.split("_pg_")[1].split("_id")[0], img)
         print(f"\t\t==> {img} is Tender")
     else:
-        cv2.imwrite(f"./notTender/{img}", image)
+        try:
+            os.mkdir(path.parent.joinpath("Tender/{}".format(date)))
+            
+        except FileExistsError:
+            pass
+        try:
+            os.mkdir(path.parent.joinpath("Tender/{}/{}".format(date,folder[:-11])))
+        except FileExistsError:
+            pass
+        cv2.imwrite(f"./notTender/{date}/{folder[:-11]}/{img}", image)
         print(f"\t\t==> {img} is not Tender")
 
 
@@ -98,6 +126,8 @@ def tender_filter1():
     # os.rmdir("./Notices")
 
 def tender_filter():
+    
+    sql_initialize()
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
     folder_count = 0
     for folder in folder_list:

@@ -4,6 +4,7 @@ from pathlib import Path
 import multiprocessing as mp
 
 CPU_COUNT = mp.cpu_count()
+DPI=200
 
 def paper_to_image(epaper_dir,source,newspaper,path):
     with fitz.open(epaper_dir.joinpath(source, newspaper)) as doc:
@@ -13,7 +14,7 @@ def paper_to_image(epaper_dir,source,newspaper,path):
 
         for i in range(0, doc.page_count):
             page = doc.load_page(i)
-            pix = page.get_pixmap(matrix=fitz.Matrix(5, 5))
+            pix = page.get_pixmap(dpi=DPI)
             output = newspaper[:-4] + "_pg_" + str(i+1) + ".jpg"
             print(f"\t==>Image conversion of page [{i + 1}/{doc.page_count}]")
             pix.save(output_path.joinpath(output))
