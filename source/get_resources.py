@@ -10,15 +10,34 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from log import Logger
+
+
+dir_lst=os.listdir(os.path.join(sys.path[0]))
+if ".env" not in dir_lst:
+    print(f"==>\n.env file not found in: \n{path}\n<==")
+    exit()
+
 
 config = dotenv_values(os.path.join(sys.path[0], ".env"))
 urls = list(config.values())[1:4]
-driver_path = config["DRIVER_PATH"]
+
+try:
+    driver_path = config["DRIVER_PATH"]
+except KeyError:
+    print("DRIVER_PATH not found in .env file")
+    exit()
 wait_time = 60
 
 options = webdriver.ChromeOptions()
 options.headless = True
-options.binary_location = config["BINARY_EXECUTABLE"]
+
+try:
+    options.binary_location = config["BINARY_EXECUTABLE"]
+except KeyError:
+    print("BINARY_EXECUTABLE not found in .env file")
+    exit()
+
 options.add_argument("--disable-notifications")
 options.add_argument("--incognito")
 options.add_argument("--log-level=3")
@@ -133,8 +152,19 @@ def first_news_source(browser, url, download_dir):
 
 def second_news_source(browser, url, download_dir):
     browser.get(url)
-    browser.find_element(By.ID, "txtEmail").send_keys(config["USER"])
-    browser.find_element(By.ID, "txtPassword").send_keys(config["KEY"])
+    
+    try:
+        browser.find_element(By.ID, "txtEmail").send_keys(config["USER"])
+    except KeyError:
+        print("USER not found in .env file")
+        exit()
+    
+    try:
+        browser.find_element(By.ID, "txtPassword").send_keys(config["KEY"])
+    except KeyError:
+        print("KEY not found in .env file")
+        exit()
+        
     browser.find_element(By.ID, "login-btn").click()
 
     for i in range(1, 3):
@@ -186,6 +216,8 @@ procedures = [first_news_source, second_news_source, third_news_source]
 
 
 def get_resource():
+    sys.stdout=Logger()
+    print("\n========Downloading PDF from newsportals=======\n")
     with webdriver.Chrome(service=Service(executable_path=driver_path), options=options) as browser:
         for url, procedure in zip(urls, procedures):
             download_folder = url.split(".")[1].capitalize()
@@ -196,4 +228,5 @@ def get_resource():
 
 
 if __name__ == "__main__":
+    sys.stdout=Logger(str(datetime.datetime.now()))
     get_resource()

@@ -20,6 +20,7 @@ Notices/*
 img/*
 source/models/datasets2class.npy
 source/models/datasets_old.npy
+logs/*
 
 # bytecode cache files
 */__pycache__/*

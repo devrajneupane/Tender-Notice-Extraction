@@ -1,17 +1,51 @@
 import mysql.connector
 from pathlib import Path
 from dotenv import dotenv_values
+import os
+import sys
+
+from log import Logger
+
 
 path = Path(__file__).parent
-tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
-USER_NAME="anuj"
-USER_PASS="anuj123"
+
+dir_lst=os.listdir(path)
+if ".env" not in dir_lst:
+    print(f"==>\n.env file not found in: \n{path}\n<==")
+    exit()
+env_path = path.joinpath(".env")
+
+#load values form .env file
+try:
+    tesseract_exec = dotenv_values(env_path)["TESSERACT_EXECUTABLE"]
+except KeyError:
+    print("TESSERACT_EXECUTABLE not found in .env file")
+    exit()
+
+try:
+    USER_NAME=dotenv_values(env_path)["SQL_USER_NAME"]
+except KeyError:
+    print("SQL_USER_NAME not found in .env file")
+    exit()
+
+try:
+    USER_PASS=dotenv_values(env_path)["SQL_USER_PASS"]
+except KeyError:
+    print("SQL_USER_PASS not found in .env file")
+    exit()
+
+try:    
+    HOST=dotenv_values(env_path)["SQL_HOST"]
+except KeyError:
+    print("SQL_HOST not found in .env file")
+    exit()
 
 def sql_initialize():
+    sys.stdout=Logger()
     # Connect to the database
     try:
         mydb = mysql.connector.connect(
-            host="localhost",
+            host=HOST,
             user=USER_NAME,
             passwd=USER_PASS,
         )
@@ -37,6 +71,14 @@ def sql_initialize():
     mycursor.execute(myquery)
 
 def sql_insert(img_id,dat, newspaper, page, imageName):
+    """
+    This function inserts the data into the database:
+    1) img_id: id of the image
+    2) dat: date of the tender
+    3) newspaper: name of the newspaper
+    4) page: page number of the newspaper where the tender was found
+    5) imageName: name of the image 
+    """
     try:
         mydb = mysql.connector.connect(
             host="localhost",
@@ -49,13 +91,18 @@ def sql_insert(img_id,dat, newspaper, page, imageName):
     mycursor = mydb.cursor()
     myquery = "USE tender"
     mycursor.execute(myquery)
+
+    #insert the values passed to the function
     myquery = "INSERT INTO tender_details (img_id,dat, newspaper, page, imageName) VALUES (%s,%s, %s, %s, %s)"
     mycursor.execute(myquery, (img_id,dat, newspaper, page, imageName))
     mydb.commit()
-    print(mycursor.rowcount, "record inserted.")
+    print(f"\t\t\t==>{mycursor.rowcount} record inserted")
 
 
 def sql_query_date():
+    """
+    This function returns the date of the last tender added to the database
+    """
     try:
         mydb = mysql.connector.connect(
             host="localhost",
@@ -73,5 +120,3 @@ def sql_query_date():
     for x in mycursor:
         return x
 
-# myquery = "select * from tender_details"
-# mycursor.execute(myquery)
