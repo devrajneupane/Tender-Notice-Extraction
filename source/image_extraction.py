@@ -2,10 +2,6 @@ import os
 import fitz
 from pathlib import Path
 import multiprocessing as mp
-import sys
-import datetime
-
-from log import Logger
 
 
 #CPU_COUNT returns the no of threads available
@@ -51,7 +47,6 @@ def paper_to_image(epaper_dir,source,newspaper,path):
 
 def extract_image():
 
-    sys.stdout=Logger()
     print("\n========Converting PDF to Images=======\n")
     path = Path(__file__).parent
     if not path.parent.joinpath("Images").exists():
@@ -117,5 +112,4 @@ def extract_image():
 
 
 if __name__ == "__main__":
-    sys.stdout=Logger(str(datetime.datetime.now()))
     extract_image()

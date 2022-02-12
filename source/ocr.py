@@ -7,16 +7,13 @@ from dotenv import dotenv_values
 import multiprocessing as mp
 from sql import sql_insert, sql_initialize
 import shutil
-import datetime
-
-from log import Logger
 
 #CPU_COUNT returns the no of threads available
 #so that we can use all the available threads
 #during the execution of the program
 CPU_COUNT=mp.cpu_count()
-dic=None
 path = Path(sys.path[0])
+website_root_folder=path.parent.parent
 
 dir_lst=os.listdir(path)
 if ".env" not in dir_lst:
@@ -71,13 +68,12 @@ def clean_folders():
         pass
 
 
-def is_tender(folder,img):
+def is_tender(folder,img,dic):
     """
     Applies OCR to the <img> present in <folder> and 
     checks for keyword in the image which is present in dict.txt
     and if found, it moves the image to Tender folder
     """
-    global dic
     image = cv2.imread(str(path.parent.joinpath("Notices" ,folder ,img)), 0)
     strike = 0
     text = tess.image_to_data(image, lang="eng+nep", timeout=240)
@@ -105,20 +101,20 @@ def is_tender(folder,img):
     if strike >=1:
 
         try:
-            os.mkdir(media_tender_path.joinpath("media","Tender",date))
+            os.mkdir(website_root_folder.joinpath("media","Tender",date))
             
         except FileExistsError:
             pass
         try:
-            os.mkdir(media_tender_path.joinpath("media","Tender",date,folder[:-11]))
+            os.mkdir(website_root_folder.joinpath("media","Tender",date,folder[:-11]))
         except FileExistsError:
             pass
         
-        cv2.imwrite(str(media_tender_path.joinpath("media","Tender",date,folder[:-11],img)), image)
+        cv2.imwrite(str(website_root_folder.joinpath("media","Tender",date,folder[:-11],img)), image)
         
         #Insert the information regarding tender into the database
-        sql_insert(img.split("_id_")[1].split('.')[0],date,folder[:-11], img.split("_pg_")[1].split("_id")[0], "Tender/"+date+"/"+folder[:-11]+"/"+img)
         print(f"\t\t==> {img} is Tender")
+        sql_insert(img.split("_id_")[1].split('.')[0],date,folder[:-11], img.split("_pg_")[1].split("_id")[0], "Tender/"+date+"/"+folder[:-11]+"/"+img)
 
     else:
         try:
@@ -135,10 +131,9 @@ def is_tender(folder,img):
 
 
 def tender_filter():
-    global dic
-    sys.stdout=Logger()
     print("\n========Applying OCR for confirmation=======\n")
 
+    sql_initialize()
     #load the dictionary file
     try:    
         dicx=open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8")
@@ -147,7 +142,12 @@ def tender_filter():
         exit()
 
     try:
-        os.mkdir(path.parent.joinpath("Tender"))      
+        os.mkdir(website_root_folder.joinpath("media"))   
+    except FileExistsError:
+        pass
+
+    try:
+        os.mkdir(website_root_folder.joinpath("media","Tender"))      
     except FileExistsError:
         pass
 
@@ -157,7 +157,6 @@ def tender_filter():
     except FileExistsError:
         pass
 
-    # print(dicx.read())
     dic = dicx.read().lower().splitlines()
 
     try:
@@ -192,7 +191,7 @@ def tender_filter():
             #If the no of processes are less than CPU_COUNT, 
             # continue adding new processes  
             if CPU_USED<=CPU_COUNT: 
-                process=mp.Process(target=is_tender, args=(folder,img))
+                process=mp.Process(target=is_tender, args=(folder,img,dic))
                 processs.append(process)
 
             #If the no of processes are equal tto CPU_COUNT,
@@ -214,9 +213,6 @@ def tender_filter():
                 processs=[]
                 CPU_USED=0
     
-    #Remove the unnecessary folders
-    clean_folders()
 
 if __name__ == "__main__":
-    sys.stdout=Logger(str(datetime.datetime.now()))
     tender_filter()

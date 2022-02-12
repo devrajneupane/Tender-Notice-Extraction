@@ -11,8 +11,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from log import Logger
-
 path = Path(__file__).parent
 dir_lst=os.listdir(path)
 if ".env" not in dir_lst:
@@ -217,7 +215,7 @@ procedures = [first_news_source, second_news_source, third_news_source]
 
 
 def get_resource():
-    sys.stdout=Logger()
+    
     print("\n========Downloading PDF from newsportals=======\n")
     with webdriver.Chrome(service=Service(executable_path=driver_path), options=options) as browser:
         for url, procedure in zip(urls, procedures):
@@ -229,5 +227,4 @@ def get_resource():
 
 
 if __name__ == "__main__":
-    sys.stdout=Logger(str(datetime.datetime.now()))
     get_resource()

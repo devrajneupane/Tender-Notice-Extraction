@@ -2,11 +2,6 @@ import cv2
 import os
 from pathlib import Path
 import multiprocessing as mp
-import numpy as np
-import sys
-import datetime
-
-from log import Logger
 
 THRESH_VALUE = 100   # Pixel value less than THRESH_VALUE is converted to white
                      # and greater than THRESH_VALUE is converted to black
@@ -81,7 +76,6 @@ def page_to_notice(path, newspaper, page, output_path,no_of_newspaper_pages):
 
 
 def extract_notice():
-   sys.stdout=Logger()
 
    print("\n========Extracting rectangular contour=======\n")
    path = Path(__file__).parent
@@ -157,5 +151,4 @@ def extract_notice():
          CPU_USED=0
 
 if __name__ == "__main__":
-   sys.stdout=Logger(str(datetime.datetime.now()))
    extract_notice()

@@ -2,10 +2,6 @@ import mysql.connector
 from pathlib import Path
 from dotenv import dotenv_values
 import os
-import sys
-
-from log import Logger
-
 
 path = Path(__file__).parent
 
@@ -41,7 +37,6 @@ except KeyError:
     exit()
 
 def sql_initialize():
-    sys.stdout=Logger()
     # Connect to the database
     try:
         mydb = mysql.connector.connect(
@@ -81,9 +76,9 @@ def sql_insert(img_id,dat, newspaper, page, imageName):
     """
     try:
         mydb = mysql.connector.connect(
-            host="localhost",
+            host=HOST,
             user=USER_NAME,
-            passwd=USER_PASS,
+            password=USER_PASS,
         )
     except mysql.connector.Error as err:
         print(err)
@@ -91,17 +86,21 @@ def sql_insert(img_id,dat, newspaper, page, imageName):
     mycursor = mydb.cursor()
     myquery = "USE tender"
     mycursor.execute(myquery)
+    myquery = "INSERT INTO tenderweb_details (img_id, dat, newspaper, page, imageName) VALUES (%s, %s, %s, %s, %s)"
     mycursor.execute(myquery, (img_id,dat, newspaper, page, imageName))
+    mydb.commit()
+    print(f"\t\t\t==>{imageName.split('/')[3]} inserted into database")
+    
+def sql_query_date():
     """
     This function returns the date of the last tender added to the database
     """
     try:
         mydb = mysql.connector.connect(
-            host="localhost",
+            host=HOST,
             user=USER_NAME,
             passwd=USER_PASS,
         )
-        print("=====Success======")
     except mysql.connector.Error as err:
         print("====Fail=====")
         print(err)

@@ -13,10 +13,7 @@ from Xception import XceptionUnit
 from model import ResNet, GoogleNet, Xception
 import multiprocessing as mp
 from pathlib import Path
-import sys
-import datetime
 
-from log import Logger
 
 # from model import get_model
 path = Path(__file__).parent
@@ -46,7 +43,6 @@ def resize(img):
 
 
 def applyCNN():
-    sys.stdout=Logger()
     print("\n========Applying CNN to filter subimages=======\n")
 
     try:
@@ -170,5 +166,4 @@ def applyCNN1():
                 cv2.imwrite("./notTender/"+file, temp)
 
 if __name__ == '__main__':
-    sys.stdout=Logger(str(datetime.datetime.now()))
     applyCNN()
