@@ -12,7 +12,7 @@ from ocr import clean_folders
 def main():
     start_time = time.time()
     clean_folders()
-    sql_initialize()
+    # sql_initialize()
     # get pdf from websites and store in /Newspaper folder
     dat=date.today().strftime("%Y-%m-%d")
     temp=sql_query_date()

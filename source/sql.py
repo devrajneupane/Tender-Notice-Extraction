@@ -26,7 +26,7 @@ def sql_initialize():
     myquery = "USE tender"
     mycursor.execute(myquery)
     # create a table
-    myquery = "CREATE TABLE IF NOT EXISTS tender_details(\
+    myquery = "CREATE TABLE IF NOT EXISTS tenderweb_details(\
                 id int AUTO_INCREMENT PRIMARY KEY,\
                 img_id int,\
                 dat DATE,\
@@ -49,7 +49,7 @@ def sql_insert(img_id,dat, newspaper, page, imageName):
     mycursor = mydb.cursor()
     myquery = "USE tender"
     mycursor.execute(myquery)
-    myquery = "INSERT INTO tender_details (img_id,dat, newspaper, page, imageName) VALUES (%s,%s, %s, %s, %s)"
+    myquery = "INSERT INTO tenderweb_details (img_id,dat, newspaper, page, imageName) VALUES (%s,%s, %s, %s, %s)"
     mycursor.execute(myquery, (img_id,dat, newspaper, page, imageName))
     mydb.commit()
     print(mycursor.rowcount, "record inserted.")
@@ -62,13 +62,15 @@ def sql_query_date():
             user=USER_NAME,
             passwd=USER_PASS,
         )
+        print("=====Success======")
     except mysql.connector.Error as err:
+        print("====Fail=====")
         print(err)
 
     mycursor = mydb.cursor()
     myquery = "USE tender"
     mycursor.execute(myquery)
-    myquery="SELECT dat FROM tender_details ORDER BY id DESC LIMIT 1"
+    myquery="SELECT dat FROM tenderweb_details ORDER BY id DESC LIMIT 1"
     mycursor.execute(myquery)
     for x in mycursor:
         return x

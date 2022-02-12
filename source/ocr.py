@@ -12,6 +12,9 @@ CPU_COUNT=mp.cpu_count()
 dic=None
 
 path = Path(sys.path[0])
+media_tender_path=path.parent.parent
+media_tender_path=Path(media_tender_path)
+
 if sys.platform == "win32":
     tesseract_exec = dotenv_values(path.joinpath(".env"))["TESSERACT_EXECUTABLE"]
     tess.pytesseract.tesseract_cmd = tesseract_exec
@@ -51,7 +54,7 @@ def is_tender(folder,img):
     img in grayscale format for better performance
     """
     global dic
-    image = cv2.imread("./Notices/" + folder + "/" + img, 0)
+    image = cv2.imread(str(path.parent.joinpath("Notices",folder,img)), 0)
     strike = 0
     text = tess.image_to_data(image, lang="eng+nep", timeout=240)
     for x, b in enumerate(text.splitlines()):
@@ -70,29 +73,29 @@ def is_tender(folder,img):
     if strike >=1:
 
         try:
-            os.mkdir(path.parent.joinpath("Tender/{}".format(date)))
+            os.mkdir(media_tender_path.joinpath("media","Tender",date))
             
         except FileExistsError:
             pass
         try:
-            os.mkdir(path.parent.joinpath("Tender/{}/{}".format(date,folder[:-11])))
+            os.mkdir(media_tender_path.joinpath("media","Tender",date,folder[:-11]))
         except FileExistsError:
             pass
         
-        cv2.imwrite(f"./Tender/{date}/{folder[:-11]}/{img}", image)
-        sql_insert(img.split("_id_")[1].split('.')[0],date,folder[:-11], img.split("_pg_")[1].split("_id")[0], img)
+        cv2.imwrite(str(media_tender_path.joinpath("media","Tender",date,folder[:-11],img)), image)
+        sql_insert(img.split("_id_")[1].split('.')[0],date,folder[:-11], img.split("_pg_")[1].split("_id")[0], "Tender/"+date+"/"+folder[:-11]+"/"+img)
         print(f"\t\t==> {img} is Tender")
     else:
         try:
-            os.mkdir(path.parent.joinpath("notTender/{}".format(date)))
+            os.mkdir(path.parent.joinpath("notTender",date))
             
         except FileExistsError:
             pass
         try:
-            os.mkdir(path.parent.joinpath("notTender/{}/{}".format(date,folder[:-11])))
+            os.mkdir(path.parent.joinpath("notTender",date,folder[:-11]))
         except FileExistsError:
             pass
-        cv2.imwrite(f"./notTender/{date}/{folder[:-11]}/{img}", image)
+        cv2.imwrite(str(path.parent.joinpath("notTender",date,folder[:-11],img)),image)
         print(f"\t\t==> {img} is not Tender")
 
 
@@ -101,14 +104,18 @@ def tender_filter():
     try:
         with open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8") as dicx:
             try:
-                os.mkdir(path.parent.joinpath("Tender"))
-                
+                os.mkdir(media_tender_path.joinpath("media"))            
 
             except FileExistsError:
                 pass
             try:
-                os.mkdir(path.parent.joinpath("notTender"))
-                
+                os.mkdir(media_tender_path.joinpath("media","Tender"))            
+
+            except FileExistsError:
+                pass
+
+            try:
+                os.mkdir(path.parent.joinpath("notTender"))                
 
             except FileExistsError:
                 pass
@@ -116,17 +123,17 @@ def tender_filter():
             # print(dicx.read())
             dic = dicx.read().lower().splitlines()
 
-    except FileNotFoundError:
-        print("dict.txt not found")
+    except OSError as e:
+        print(e)
         exit()
 
-    folder_list = os.listdir(path.parent.joinpath("Notices/"))
+    folder_list = os.listdir(path.parent.joinpath("Notices"))
     folder_count = 0
     sql_initialize()
     for folder in folder_list:
         folder_count += 1
         print(f"Processing Newspaper: {folder}=====================[{folder_count}/{len(folder_list)}]")
-        img_list = os.listdir("./Notices/" + folder + "/")
+        img_list = os.listdir(path.parent.joinpath("Notices",folder))
         image_count = 0
         CPU_USED = 0
         processs=[]
@@ -160,7 +167,7 @@ def tender_filter():
 
 def tender_filter1():
     
-    sql_initialize()
+    # sql_initialize()
     folder_list = os.listdir(path.parent.joinpath("Notices/"))
     folder_count = 0
     for folder in folder_list:
