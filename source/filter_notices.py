@@ -13,10 +13,13 @@ from Xception import XceptionUnit
 from model import ResNet, GoogleNet, Xception
 import multiprocessing as mp
 from pathlib import Path
+import sys
+import datetime
+
+from log import Logger
+
 # from model import get_model
 path = Path(__file__).parent
-print("path=",path)
-print("path parent=",path.parent)
 
 
 def resize(img):
@@ -43,6 +46,9 @@ def resize(img):
 
 
 def applyCNN():
+    sys.stdout=Logger()
+    print("\n========Applying CNN to filter subimages=======\n")
+
     try:
         os.mkdir(path.parent.joinpath("Notices"))
     except FileExistsError:
@@ -52,12 +58,30 @@ def applyCNN():
         os.mkdir(path.parent.joinpath("notNotices"))
     except FileExistsError:
         pass
-    dirList = os.listdir(path.parent.joinpath("subimage"))
+    try:    
+        dirList = os.listdir(path.parent.joinpath("subimage"))
+    except FileNotFoundError:
+        print(f"==>\n'subimage' folder not found in: \n{path.parent}\n<==")
+        exit()
+    
+    if len(dirList)==0:
+        print(f"==>\n'subimage' folder is empty in: \n{path.parent.joinpath('subimage')}\n<==")
+        exit()
+    newspaper_count = 0
     for dirn in dirList:
+        newspaper_count += 1
         fileList = os.listdir(path.parent.joinpath("subimage",dirn))
+        
+        if len(fileList)==0:
+            print(f"==>\nFolder is empty in: \n{path.parent.joinpath('subimage',dirn)}\n<==")
+            continue
+
+        print(f"Processing Newspaper: {dirn}===================[{newspaper_count}/{len(dirList)}]")
         imgList = []
         finalImage = []
+        img_count=0
         for file in fileList:
+            img_count+=1
             # img = tf.keras.utils.load_img(f"./subimage/{dir}/{file}", grayscale=False, color_mode="grayscale")
             img = cv2.imread(str(path.parent.joinpath("subimage",dirn,file)))
             temp=img.copy()
@@ -68,19 +92,19 @@ def applyCNN():
             img = img / 255.0
             imgList.append(img)
             finalImage.append(file)
+            print(f"\t==>Applying CNN to image: {file}===================[{img_count}/{len(fileList)}]")
         imgList = np.array(imgList)
-        print("Image shape: ", imgList.shape)
+
 
         model = Xception()
         model = keras.models.load_model(path.joinpath('models/model_xception_1.h5'), custom_objects={'XceptionUnit': XceptionUnit})
         pred = model.predict(imgList,workers=mp.cpu_count(), use_multiprocessing=True)
-        # pred = model.predict(imgList)
-        print("Pred shape: ", pred.shape)
+
 
         for i in range(len(pred)):
+            
             if pred[i][0] < pred[i][1] or abs(pred[i][0] - pred[i][1]) < 0.1:
-                print("Notice is for Tender")
-                print(f"{dirn}/{finalImage[i]}")
+                print(f"\t\t==>{fileList[i]} is candidate for Tender")
                 # cv2.imwrite("./Tender/"+finalImage[i],temp)
                 try: 
                     os.mkdir(path.parent.joinpath("Notices",dirn))
@@ -88,8 +112,7 @@ def applyCNN():
                     pass
                 shutil.copy(path.parent.joinpath("subimage",dirn,finalImage[i]), path.parent.joinpath("Notices",dirn,finalImage[i]))
             else:
-                print("Notice is not tender")
-                print(f"{dirn}/{finalImage[i]}")
+                print(f"\t\t==>{fileList[i]} is not candidate for Tender")
                 try: 
                     os.mkdir(path.parent.joinpath("notNotices",dirn))
                 except FileExistsError:
@@ -147,4 +170,5 @@ def applyCNN1():
                 cv2.imwrite("./notTender/"+file, temp)
 
 if __name__ == '__main__':
+    sys.stdout=Logger(str(datetime.datetime.now()))
     applyCNN()
