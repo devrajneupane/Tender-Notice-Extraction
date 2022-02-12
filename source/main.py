@@ -21,7 +21,7 @@ def main():
     except FileExistsError:
         pass
 
-    sys.stdout=Logger(str(datetime.datetime.now()))
+    sys.stdout=Logger(str(datetime.datetime.now().strftime("%Y-%m-%d (%Hh-%Mm-%Ss-%fus)")))
 
 
     start_time = time.time()

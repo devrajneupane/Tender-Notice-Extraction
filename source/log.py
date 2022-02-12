@@ -14,6 +14,7 @@ class Logger(object):
         self.path = Path(__file__).parent
         self.terminal = sys.stdout
         if fname is not None:
+            print("hello")
             filename=fname  
             logging.basicConfig(filename=str(self.path.parent.joinpath("logs","log-"+filename+".txt")),filemode="w+",format='%(asctime)s %(message)s') 
             logger=logging.getLogger() 

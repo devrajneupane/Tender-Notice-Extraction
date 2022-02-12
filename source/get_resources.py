@@ -4,6 +4,7 @@ import time
 import datetime
 import requests
 from bs4 import BeautifulSoup
+from pathlib import Path
 from selenium import webdriver
 from dotenv import dotenv_values
 from selenium.webdriver.common.by import By
@@ -12,14 +13,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from log import Logger
 
-
-dir_lst=os.listdir(os.path.join(sys.path[0]))
+path = Path(__file__).parent
+dir_lst=os.listdir(path)
 if ".env" not in dir_lst:
     print(f"==>\n.env file not found in: \n{path}\n<==")
     exit()
 
 
-config = dotenv_values(os.path.join(sys.path[0], ".env"))
+config = dotenv_values(path.joinpath(".env"))
 urls = list(config.values())[1:4]
 
 try:
