@@ -7,6 +7,8 @@ from dotenv import dotenv_values
 import multiprocessing as mp
 from sql import sql_insert, sql_initialize
 import shutil
+import numpy as np
+
 
 #CPU_COUNT returns the no of threads available
 #so that we can use all the available threads
@@ -30,6 +32,28 @@ if sys.platform == "win32":
     tess.pytesseract.tesseract_cmd = tesseract_exec
 
 
+def remove_duplicate_img():
+    """
+    This function removes the duplicate images present in the Notices folder
+    It simply compares the image matrix of the image
+    If the matrix is same, it is removed
+    """
+    newspaper_lst=os.listdir(path.parent.joinpath("Notices"))
+    for newspaper in newspaper_lst:
+        img_lst=os.listdir(path.parent.joinpath("Notices",newspaper))
+        for img in img_lst:
+           org_img=np.array(cv2.imread(str(path.parent.joinpath("Notices",newspaper,img)),0))
+           for img2 in img_lst:
+            if img==img2:
+                continue
+            else:
+                dup_img=np.array(cv2.imread(str(path.parent.joinpath("Notices",newspaper,img2)),0))
+                if not org_img.shape==dup_img.shape:
+                    continue
+                if np.array_equal(org_img,dup_img):
+                    os.remove(str(path.parent.joinpath("Notices",newspaper,img2)))
+                    img_lst.remove(img2)
+                    print(f"\t\t==> {img} is same as{img2}, so {img2} is removed")
 
 def clean_folders():
     """
@@ -212,6 +236,7 @@ def tender_filter():
                     process.terminate()
                 processs=[]
                 CPU_USED=0
+    remove_duplicate_img()
     
 
 if __name__ == "__main__":
