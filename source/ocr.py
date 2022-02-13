@@ -10,6 +10,7 @@ import shutil
 import numpy as np
 
 
+
 #CPU_COUNT returns the no of threads available
 #so that we can use all the available threads
 #during the execution of the program
@@ -159,6 +160,8 @@ def tender_filter():
 
     sql_initialize()
     #load the dictionary file
+    remove_duplicate_img()
+
     try:    
         dicx=open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8")
     except FileNotFoundError:
@@ -236,7 +239,7 @@ def tender_filter():
                     process.terminate()
                 processs=[]
                 CPU_USED=0
-    remove_duplicate_img()
+
     
 
 if __name__ == "__main__":

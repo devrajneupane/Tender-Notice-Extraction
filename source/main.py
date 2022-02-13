@@ -10,6 +10,7 @@ from pathlib import Path
 import os
 from datetime import date
 from sql import sql_initialize, sql_query_date
+import googledrive
 
 def main():
     path = Path(__file__).parent
@@ -43,6 +44,8 @@ def main():
 
     #Apply OCR to the extracted notices to detect if the notice is tender
     ocr.tender_filter()
+
+    googledrive.upload_to_google_drive()
 
     #Clean Unwanted Folders
     ocr.clean_folders()
