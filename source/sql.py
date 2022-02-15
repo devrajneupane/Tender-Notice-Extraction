@@ -5,13 +5,13 @@ import os
 
 path = Path(__file__).parent
 
-dir_lst=os.listdir(path)
+dir_lst = os.listdir(path)
 if ".env" not in dir_lst:
     print(f"==>\n.env file not found in: \n{path}\n<==")
     exit()
 env_path = path.joinpath(".env")
 
-#load values form .env file
+# load values form .env file
 try:
     tesseract_exec = dotenv_values(env_path)["TESSERACT_EXECUTABLE"]
 except KeyError:
@@ -19,22 +19,23 @@ except KeyError:
     exit()
 
 try:
-    USER_NAME=dotenv_values(env_path)["SQL_USER_NAME"]
+    USER_NAME = dotenv_values(env_path)["SQL_USER_NAME"]
 except KeyError:
     print("SQL_USER_NAME not found in .env file")
     exit()
 
 try:
-    USER_PASS=dotenv_values(env_path)["SQL_USER_PASS"]
+    USER_PASS = dotenv_values(env_path)["SQL_USER_PASS"]
 except KeyError:
     print("SQL_USER_PASS not found in .env file")
     exit()
 
-try:    
-    HOST=dotenv_values(env_path)["SQL_HOST"]
+try:
+    HOST = dotenv_values(env_path)["SQL_HOST"]
 except KeyError:
     print("SQL_HOST not found in .env file")
     exit()
+
 
 def sql_initialize():
     # Connect to the database
@@ -55,24 +56,25 @@ def sql_initialize():
     myquery = "USE tender"
     mycursor.execute(myquery)
     # create a table
-    myquery = "CREATE TABLE IF NOT EXISTS tenderweb_details(\
+    myquery = "CREATE TABLE IF NOT EXISTS tenderweb_tender(\
                 id int AUTO_INCREMENT PRIMARY KEY,\
-                img_id int,\
-                dat DATE,\
-                newspaper varchar(255),\
-                page int,\
-                imageName varchar(255))"
+                image_id int,\
+                date_published DATE,\
+                newspaper_source varchar(255),\
+                page_number int,\
+                image_name varchar(255))"
 
     mycursor.execute(myquery)
 
-def sql_insert(img_id,dat, newspaper, page, imageName):
+
+def sql_insert(img_id, date, newspaper, page, image_name):
     """
     This function inserts the data into the database:
     1) img_id: id of the image
     2) dat: date of the tender
     3) newspaper: name of the newspaper
     4) page: page number of the newspaper where the tender was found
-    5) imageName: name of the image 
+    5) imageName: name of the image
     """
     try:
         mydb = mysql.connector.connect(
@@ -86,11 +88,14 @@ def sql_insert(img_id,dat, newspaper, page, imageName):
     mycursor = mydb.cursor()
     myquery = "USE tender"
     mycursor.execute(myquery)
-    myquery = "INSERT INTO tenderweb_details (img_id, dat, newspaper, page, imageName) VALUES (%s, %s, %s, %s, %s)"
-    mycursor.execute(myquery, (img_id,dat, newspaper, page, imageName))
+    # myquery = f"INSERT INTO tenderweb_tender VALUES ({img_id}, {date}, {newspaper}, {page}, {image_name})"
+    # mycursor.execute(myquery)
+    myquery = "INSERT INTO tenderweb_tender (image_id, date_published, newspaper_source, page_number, image_name) VALUES (%s, %s, %s, %s, %s)"
+    mycursor.execute(myquery, (img_id, date, newspaper, page, image_name))
     mydb.commit()
-    print(f"\t\t\t==>{imageName.split('/')[3]} inserted into database")
-    
+    print(f"\t\t\t==>{image_name.split('/')[3]} inserted into database")
+
+
 def sql_query_date():
     """
     This function returns the date of the last tender added to the database
@@ -108,8 +113,7 @@ def sql_query_date():
     mycursor = mydb.cursor()
     myquery = "USE tender"
     mycursor.execute(myquery)
-    myquery="SELECT dat FROM tenderweb_details ORDER BY id DESC LIMIT 1"
+    myquery = "SELECT date_published FROM tenderweb_tender ORDER BY id DESC LIMIT 1"
     mycursor.execute(myquery)
     for x in mycursor:
         return x
-
