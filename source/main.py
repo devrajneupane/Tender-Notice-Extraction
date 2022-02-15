@@ -14,7 +14,7 @@ import googledrive
 
 def main():
     path = Path(__file__).parent
-    sql_initialize()
+    # sql_initialize()
     start_time = time.time()
     #Clean Unwanted Folders
     ocr.clean_folders()
@@ -40,15 +40,15 @@ def main():
     notice_extraction.extract_notice()
 
     #Apply Xception model to detect if the image looks like tender
-    filter_notices.applyCNN()
+    # filter_notices.applyCNN()
 
     #Apply OCR to the extracted notices to detect if the notice is tender
-    ocr.tender_filter()
+    # ocr.tender_filter()
 
-    googledrive.upload_to_google_drive()
+    # googledrive.upload_to_google_drive()
 
     #Clean Unwanted Folders
-    ocr.clean_folders()
+    # ocr.clean_folders()
 
     elapsed = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
     print(f"Time Elapsed: {elapsed}")
