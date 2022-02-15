@@ -19,7 +19,7 @@ from Xception import XceptionUnit
 from model import ResNet, GoogleNet, Xception
 
 # early_stopping_cb = keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)
-epoch = 50
+epoch = 100
 f = 1
 modelNo = 1
 
@@ -35,9 +35,9 @@ elif t[0]== "3":
     modelNo = 3
 
 if modelNo == 3:
-    datasets = np.load('D:\Programming\Python\Tender-Notice-Extraction\source\models\datasets2class.npy', allow_pickle=True)
+    datasets = np.load('E:\Programming\Python\Tender-Notice-Extraction\source\models\datasets2class.npy', allow_pickle=True)
 else:
-    datasets = np.load('D:\Programming\Python\Tender-Notice-Extraction\source\models\datasets.npy', allow_pickle=True)
+    datasets = np.load('E:\Programming\Python\Tender-Notice-Extraction\source\models\datasets.npy', allow_pickle=True)
 # np.random.shuffle(datasets)
 X = []
 y = []
@@ -50,15 +50,15 @@ y = np.array(y)
 
 # remove all checkpoints if it exists
 try:
-    os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5")
+    os.remove("E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5")
 except:
     pass
 try:
-    os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5")
+    os.remove("E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5")
 except:
     pass
 try:
-    os.remove("D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5")
+    os.remove("E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5")
 except:
     pass
 
@@ -77,15 +77,15 @@ if modelNo == 1:
                                                                                         tfa.metrics.F1Score(num_classes=1, threshold=0.5)])
 
     print("\n\nTraining ResNet\n\n")
-    checkpoint_cb_resnet = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5', save_best_only=True)
+    checkpoint_cb_resnet = keras.callbacks.ModelCheckpoint(filepath='E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5', save_best_only=True)
     history_resnet = model_resnet.fit(X_train, y_train,
                                         epochs = epoch,
                                         validation_data = (X_valid, y_valid),
                                         callbacks = [checkpoint_cb_resnet],
                                         batch_size = 16)
 
-    model_resnet = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5', custom_objects={'ResidualUnit': ResidualUnit})
-    model_resnet.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_resnet_' + str(f) + '.h5')
+    model_resnet = keras.models.load_model('E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_resnet.h5', custom_objects={'ResidualUnit': ResidualUnit})
+    model_resnet.save('E:\Programming\Python\Tender-Notice-Extraction\source\models\model_resnet_' + str(f) + '.h5')
 
     print("\n\nEvaluating ResNet\n\n")
     model_resnet.evaluate(X_test, y_test)
@@ -131,7 +131,7 @@ if modelNo == 1:
                         top=0.9, 
                         wspace=0.4, 
                         hspace=0.8)
-    plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\resnet_accuracy_loss_' + str(f) + '.jpeg')
+    plt.savefig('E:\Programming\Python\Tender-Notice-Extraction\img\\resnet_accuracy_loss_' + str(f) + '.jpeg')
     plt.clf()
 
 
@@ -185,7 +185,7 @@ if modelNo == 1:
                     top=0.9, 
                     wspace=0.4, 
                     hspace=0.8)
-    plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\resnet_precision_recall_f1score' + str(f) + '.jpeg')
+    plt.savefig('E:\Programming\Python\Tender-Notice-Extraction\img\\resnet_precision_recall_f1score' + str(f) + '.jpeg')
     plt.clf()
 
 
@@ -197,15 +197,15 @@ elif modelNo == 2:
                                                                                             tfa.metrics.F1Score(num_classes=1, threshold=0.5)])
 
     print("\n\nTraining GoogleNet\n\n")
-    checkpoint_cb_googlenet = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', save_best_only=True)
+    checkpoint_cb_googlenet = keras.callbacks.ModelCheckpoint(filepath='E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', save_best_only=True)
     history_googlenet = model_googlenet.fit(X_train, y_train,
                                                 epochs = epoch,
                                                 validation_data = (X_valid, y_valid),
                                                 callbacks = [checkpoint_cb_googlenet],
                                                 batch_size = 8)
 
-    model_googlenet = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', custom_objects={'InceptionUnit': InceptionUnit})
-    model_googlenet.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_googlenet_' + str(f) + '.h5')
+    model_googlenet = keras.models.load_model('E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_googlenet.h5', custom_objects={'InceptionUnit': InceptionUnit})
+    model_googlenet.save('E:\Programming\Python\Tender-Notice-Extraction\source\models\model_googlenet_' + str(f) + '.h5')
 
     print("\n\nEvaluating GoogleNet\n\n")
     model_googlenet.evaluate(X_test, y_test)
@@ -247,7 +247,7 @@ elif modelNo == 2:
                         top=0.9, 
                         wspace=0.4, 
                         hspace=0.8)
-    plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\googlenet_accuracy_loss_' + str(f) + '.jpeg')
+    plt.savefig('E:\Programming\Python\Tender-Notice-Extraction\img\\googlenet_accuracy_loss_' + str(f) + '.jpeg')
     plt.clf()
 
     fig2 = plt.figure()
@@ -300,7 +300,7 @@ elif modelNo == 2:
                         top=0.9, 
                         wspace=0.4, 
                         hspace=0.8)
-    plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\googlenet_precision_recall_f1score_' + str(f) + '.jpeg')
+    plt.savefig('E:\Programming\Python\Tender-Notice-Extraction\img\\googlenet_precision_recall_f1score_' + str(f) + '.jpeg')
     plt.clf()
 
 
@@ -313,15 +313,15 @@ elif modelNo == 3:
     #                                                                                         tfa.metrics.F1Score(num_classes=1, threshold=0.5)])
 
     print("\n\nTraining Xception\n\n")
-    checkpoint_cb_xception = keras.callbacks.ModelCheckpoint(filepath='D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', save_best_only=True)
+    checkpoint_cb_xception = keras.callbacks.ModelCheckpoint(filepath='E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', save_best_only=True)
     history_xception = model_xception.fit(X_train, y_train,
                                             epochs = epoch,
                                             validation_data = (X_valid, y_valid),
                                             callbacks = [checkpoint_cb_xception],
                                             batch_size = 8)
 
-    model_xception = keras.models.load_model('D:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', custom_objects={'XceptionUnit': XceptionUnit})
-    model_xception.save('D:\Programming\Python\Tender-Notice-Extraction\source\models\model_xception_' + str(f) + '.h5')
+    model_xception = keras.models.load_model('E:\Programming\Python\Tender-Notice-Extraction\source\models\checkpoint_xception.h5', custom_objects={'XceptionUnit': XceptionUnit})
+    model_xception.save('E:\Programming\Python\Tender-Notice-Extraction\source\models\model_xception_' + str(f) + '.h5')
 
     print("\n\nEvaluating Xception\n\n")
     model_xception.evaluate(X_test, y_test)
@@ -363,7 +363,7 @@ elif modelNo == 3:
                     top=0.9, 
                     wspace=0.4, 
                     hspace=0.8)
-    plt.savefig('D:\Programming\Python\Tender-Notice-Extraction\img\\xception_accuracy_loss_' + str(f) + '.jpeg')
+    plt.savefig('E:\Programming\Python\Tender-Notice-Extraction\img\\xception_accuracy_loss_' + str(f) + '.jpeg')
     plt.clf()
 
     # fig2 = plt.figure()

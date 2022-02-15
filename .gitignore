@@ -1,20 +1,40 @@
-*/Datasets/*
-/Datasets/*
-/source/__pycache__/*
-/source/__pycache__/
-*/logs/*
-/logs/*
+# notebook checkpoints
 /.ipynb_checkpoints/*
-*/Images/*
-/Images/*
-*/Newspapers/*
-/Newspapers/*
-/Notices/*
-*/Notices/*
+
+# User defined driectories
+Images/*
+Downloads/*
+Newspapers/*
+Notices/*
+Datasets/*
+*/Datasets/*
+Screenshots/*
+Tender/*
+notTender/*
 /source/models/datasets.npy
-/source/models/datasets_old.npy
-/source/models/datasets2class.npy
-/Tender/*
-*/Tender/*
-/notTender/*
-*/notTender/*
+subimage/*
+Tender/*    
+notTender/*
+notNotices/*
+Notices/*
+img/*
+source/models/datasets2class.npy
+source/models/datasets_old.npy
+logs/*
+
+# bytecode cache files
+*/__pycache__/*
+
+# TF logs and models
+logs/*
+/models/*
+
+# Environment Variables
+*.env
+
+# VScode settings
+*/.vscode/*
+.vscode/*
+
+# chrome driver
+driver/*
