@@ -101,7 +101,7 @@ def page_to_notice(path, newspaper, page, output_path,no_of_newspaper_pages):
    ret, thresh = cv2.threshold(img_gray, THRESH_VALUE, 255, cv2.THRESH_BINARY_INV)
 
    # Find contours in the image
-   contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+   contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
    print(f"\t==>Extracting Notice from {newspaper[:-11]} page [%s/%s]" % (page.split("_pg_")[1].split(".")[0], no_of_newspaper_pages))
 
    count=0
