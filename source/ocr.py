@@ -157,8 +157,7 @@ def is_tender(folder,img,dic):
 
 def tender_filter():
     print("\n========Applying OCR for confirmation=======\n")
-
-    sql_initialize()
+ 
     #load the dictionary file
     remove_duplicate_img()
 
@@ -243,4 +242,5 @@ def tender_filter():
     
 
 if __name__ == "__main__":
+    # sql_initialize()
     tender_filter()

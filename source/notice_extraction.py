@@ -27,14 +27,57 @@ MAX_HEIGHT = 6000  # maximum height of the reactangle to be extracted
 #during the execution of the program
 CPU_COUNT=mp.cpu_count()
 
-def find_ind(contour,contours):
+
+def same_contour(c1,c2):
+   if c1.shape != c2.shape:
+      return False
+   
+   row=c1.shape[0]
+   count=0
+   for j in range (0,row):
+      if c1[j][0][0] == c2[j][0][0]:
+         count +=1
+
+      if c1[j][0][1] == c2[j][0][1]:
+         count +=1
+
+      # print(f"count={count} and row={row}")
+      if count==2*row:
+         return True
+
+def find_ind(contour,contours,h):
    i=0
    for c in contours:
-      val=cv2.matchShapes(c, contour,1,0.0)
-      if val==0:
-         break
-      i=i+1
-   return i
+      # val=cv2.matchShapes(c, contour,1,0.0)
+      # if val==0:
+      #    break
+      # i=i+1
+      # print("i=",i)
+      # print("c.shape=",c.shape)
+      # print("contour.shape=",contour.shape)
+      # print("c=",c)
+      # print("contour=",contour)
+
+      if c.shape != contour.shape:
+         i=i+1
+         continue
+      
+      row=c.shape[0]
+      count=0
+      for j in range (0,row):
+         if c[j][0][0] == contour[j][0][0]:
+            count +=1
+
+         if c[j][0][1] == contour[j][0][1]:
+            count +=1
+
+      # print(f"count={count} and row={row}")
+      if count==2*row:
+         # print("index=",i , "hier of i=",h[0][i])
+         return i
+      else:
+         i=i+1
+              
 
 
 def page_to_notice(path, newspaper, page, output_path,no_of_newspaper_pages):
@@ -98,12 +141,13 @@ def page_to_notice(path, newspaper, page, output_path,no_of_newspaper_pages):
 
          if (w>=RECOMPUTE_WIDTH and h>=RECOMPUTE_HEIGHT):
             while (w>=RECOMPUTE_WIDTH and h>=RECOMPUTE_HEIGHT):
-               
+               if hier[2] == -1 :
+                  break
                hier = hierarchy[0][hier[2]]
                contour=contours[hier[2]]
                x, y, w, h = cv2.boundingRect(contour)
                
-            hier=hierarchy[0][find_ind(contour, contours)]
+            hier=hierarchy[0][find_ind(contour, contours,hierarchy)]
                
             if hier[0] == -1 or hier[1] == -1:
                round_complete+=1
@@ -126,11 +170,14 @@ def page_to_notice(path, newspaper, page, output_path,no_of_newspaper_pages):
                # print("checkpoint 1")
             
             run=True
+            org_contour=contour
             while run:
                #Recompute the contour with
-               if hier[0] == -1 and hier[1] == -1:
+               if hier[0] == -1:
                   break
                contour=contours[hier[0]]
+               if same_contour(contour, org_contour):
+                  break
 
                EPSILON= EPSILON_FACTOR * cv2.arcLength(contour, True)
                poly = cv2.approxPolyDP(contour,EPSILON, True)
@@ -148,7 +195,7 @@ def page_to_notice(path, newspaper, page, output_path,no_of_newspaper_pages):
                   # cv2.putText(img, "x= "+str(x)+" and y= "+str(y)+"hier="+str(hier), (x,y-30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 3)
                   # print("hir",hier)
                   # print("checkpoint 2")
-               hier=hierarchy[0][find_ind(contour, contours)]
+               hier=hierarchy[0][find_ind(contour, contours,hierarchy)]
                if hier[0] == -1 or hier[1] == -1:
                   round_complete+=1
                if round_complete==2:      #Iterating through all the interior rectangles,
@@ -187,7 +234,7 @@ def page_to_notice1(path, newspaper, page, output_path,no_of_newspaper_pages):
    ret, thresh = cv2.threshold(img_gray, THRESH_VALUE, 255, cv2.THRESH_BINARY_INV)
 
    # Find contours in the image
-   contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+   contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
    print(f"\t==>Extracting Notice from {newspaper[:-11]} page [%s/%s]" % (page.split("_pg_")[1].split(".")[0], no_of_newspaper_pages))
 
    count=0
@@ -212,12 +259,12 @@ def page_to_notice1(path, newspaper, page, output_path,no_of_newspaper_pages):
          count =count+1
 
          #Cropping the ROI
-         # cropped_image = img[y: y + h, x: x + w]
-         cv2.drawContours(img, contour, -1, (0,0,224), 10)
-         cv2.putText(img, "x= "+str(x)+" and y= "+str(y)+" hr= "+str(hr), (x,y-30), cv2.FONT_HERSHEY_SIMPLEX, 1, (13,7,135), 3)
+         cropped_image = img[y: y + h, x: x + w]
+         # cv2.drawContours(img, contour, -1, (0,0,224), 10)
+         # cv2.putText(img, "x= "+str(x)+" and y= "+str(y)+" hr= "+str(hr), (x,y-30), cv2.FONT_HERSHEY_SIMPLEX, 1, (13,7,135), 3)
          filename = str(output_path.joinpath(page.split(".")[0] +"_id_"+str(count)+ '.png'))
-         # cv2.imwrite(filename, cropped_image)
-   cv2.imwrite(filename, img)
+         cv2.imwrite(filename, cropped_image)
+   # cv2.imwrite(filename, img)
 
 
 def extract_notice():
