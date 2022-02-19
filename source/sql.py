@@ -2,8 +2,9 @@ import mysql.connector
 from pathlib import Path
 from dotenv import dotenv_values
 import os
+import sys
 
-path = Path(__file__).parent
+path = Path(sys.path[0])
 
 dir_lst = os.listdir(path)
 if ".env" not in dir_lst:

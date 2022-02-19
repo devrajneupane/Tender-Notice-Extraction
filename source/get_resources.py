@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-path = Path(__file__).parent
+path = Path(sys.path[0])
 dir_lst=os.listdir(path)
 if ".env" not in dir_lst:
     print(f"==>\n.env file not found in: \n{path}\n<==")

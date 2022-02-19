@@ -13,10 +13,11 @@ from Xception import XceptionUnit
 from model import ResNet, GoogleNet, Xception
 import multiprocessing as mp
 from pathlib import Path
+import sys
 
 
 # from model import get_model
-path = Path(__file__).parent
+path = Path(sys.path[0])
 
 
 def resize(img):

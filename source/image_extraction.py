@@ -2,6 +2,7 @@ import os
 import fitz
 from pathlib import Path
 import multiprocessing as mp
+import sys
 
 
 #CPU_COUNT returns the no of threads available
@@ -48,7 +49,7 @@ def paper_to_image(epaper_dir,source,newspaper,path):
 def extract_image():
 
     print("\n========Converting PDF to Images=======\n")
-    path = Path(__file__).parent
+    path = Path(sys.path[0])
     if not path.parent.joinpath("Images").exists():
         os.mkdir(path.parent.joinpath("Images"))
 

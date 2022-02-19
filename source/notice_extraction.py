@@ -2,6 +2,7 @@ import cv2
 import os
 from pathlib import Path
 import multiprocessing as mp
+import sys
 
 THRESH_VALUE = 100   # Pixel value less than THRESH_VALUE is converted to white
                      # and greater than THRESH_VALUE is converted to black
@@ -270,7 +271,7 @@ def page_to_notice1(path, newspaper, page, output_path,no_of_newspaper_pages):
 def extract_notice():
 
    print("\n========Extracting rectangular contour=======\n")
-   path = Path(__file__).parent
+   path = Path(sys.path[0])
    notice_path = path.parent.joinpath("subimage")
 
    if not notice_path.exists():
