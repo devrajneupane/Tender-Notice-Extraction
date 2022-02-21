@@ -68,6 +68,27 @@ def sql_initialize():
     mycursor.execute(myquery)
 
 
+def is_dupliacte(image_name):
+    try:
+        mydb = mysql.connector.connect(
+            host=HOST,
+            user=USER_NAME,
+            password=USER_PASS,
+        )
+    except mysql.connector.Error as err:
+        print(err)
+
+    mycursor = mydb.cursor()
+    myquery = "USE tender"
+    mycursor.execute(myquery)
+    myquery = f"SELECT * FROM tenderweb_tender WHERE image_name = '{image_name}'"
+    mycursor.execute(myquery)
+    data=mycursor.fetchall()
+    if len(data)==0:
+        return False
+    return True
+
+
 def sql_insert(img_id, date, newspaper, page, image_name):
     """
     This function inserts the data into the database:
@@ -92,9 +113,13 @@ def sql_insert(img_id, date, newspaper, page, image_name):
     # myquery = f"INSERT INTO tenderweb_tender VALUES ({img_id}, {date}, {newspaper}, {page}, {image_name})"
     # mycursor.execute(myquery)
     myquery = "INSERT INTO tenderweb_tender (image_id, date_published, newspaper_source, page_number, image_name) VALUES (%s, %s, %s, %s, %s)"
-    mycursor.execute(myquery, (img_id, date, newspaper, page, image_name))
-    mydb.commit()
-    print(f"\t\t\t==>{image_name.split('/')[3]} inserted into database")
+    if not is_dupliacte(image_name):
+        mycursor.execute(myquery, (img_id, date, newspaper, page, image_name))
+        mydb.commit()
+        print(f"\t\t\t==>{image_name.split('/')[3]} inserted into database")
+
+
+
 
 
 def sql_query_date():
@@ -118,3 +143,7 @@ def sql_query_date():
     mycursor.execute(myquery)
     for x in mycursor:
         return x
+
+
+if __name__=="__main__":
+    pass
