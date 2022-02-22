@@ -21,6 +21,7 @@ img/*
 source/models/datasets2class.npy
 source/models/datasets_old.npy
 logs/*
+.venv/*
 
 # bytecode cache files
 */__pycache__/*
