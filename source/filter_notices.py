@@ -14,6 +14,7 @@ from model import ResNet, GoogleNet, Xception
 import multiprocessing as mp
 from pathlib import Path
 import sys
+from log import Logger
 
 
 # from model import get_model
@@ -44,6 +45,7 @@ def resize(img):
 
 
 def applyCNN():
+    sys.stdout=Logger()
     print("\n========Applying CNN to filter subimages=======\n")
 
     try:
@@ -136,6 +138,7 @@ def applyCNN():
 
 
 def applyCNN1():
+    sys.stdout=Logger()
     dirList = os.listdir("./subimage/")
     for dir in dirList:
         fileList = os.listdir("./subimage/" + dir + "/")
@@ -163,4 +166,5 @@ def applyCNN1():
 
 
 if __name__ == '__main__':
+    sys.stdout=Logger(datetime.datetime.now())
     applyCNN()

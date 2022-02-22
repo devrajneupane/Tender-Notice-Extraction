@@ -1,8 +1,11 @@
+import os
+import sys
 import mysql.connector
 from pathlib import Path
 from dotenv import dotenv_values
-import os
-import sys
+from log import Logger
+
+sys.stdout=Logger()
 
 path = Path(sys.path[0])
 
@@ -38,112 +41,72 @@ except KeyError:
     exit()
 
 
-def sql_initialize():
-    # Connect to the database
+def sql_initialize(query, is_insert):
+    """
+    A database named tender must be exists with a table named tenderweb_tender with following fields
+    id, image_id, date_published, newspaper_source, page_number, image_name
+    Run following SQL query if the databse and table doesn't exist already
+    CREATE DATABSE IF NOT EXISTS tender;
+    USE tender;
+    CREATE TABLE IF NOT EXISTS tenderweb_tender(
+            id int AUTO_INCREMENT PRIMARY KEY,
+            image_id int,
+            date_published DATE,
+            newspaper_source varchar(255),
+            page_number int,
+            image_name varchar(255));
+
+    """
+    sys.stdout=Logger()
+
     try:
-        mydb = mysql.connector.connect(
-            host=HOST,
-            user=USER_NAME,
-            passwd=USER_PASS,
-        )
-    except mysql.connector.Error as err:
-        print(err)
+        with mysql.connector.connect(host=HOST, user=USER_NAME, password=USER_PASS, database="tender") as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                if not is_insert:
+                    return cursor.fetchall()
 
-    mycursor = mydb.cursor()
-    # Create a database if it doesn't exist
-    myquery = "CREATE DATABASE IF NOT EXISTS tender"
-    mycursor.execute(myquery)
-    # use the database
-    myquery = "USE tender"
-    mycursor.execute(myquery)
-    # create a table
-    myquery = "CREATE TABLE IF NOT EXISTS tenderweb_tender(\
-                id int AUTO_INCREMENT PRIMARY KEY,\
-                image_id int,\
-                date_published DATE,\
-                newspaper_source varchar(255),\
-                page_number int,\
-                image_name varchar(255))"
+                else:
+                    connection.commit()
+                    return True
 
-    mycursor.execute(myquery)
-
-
-def is_dupliacte(image_name):
-    try:
-        mydb = mysql.connector.connect(
-            host=HOST,
-            user=USER_NAME,
-            password=USER_PASS,
-        )
-    except mysql.connector.Error as err:
-        print(err)
-
-    mycursor = mydb.cursor()
-    myquery = "USE tender"
-    mycursor.execute(myquery)
-    myquery = f"SELECT * FROM tenderweb_tender WHERE image_name = '{image_name}'"
-    mycursor.execute(myquery)
-    data=mycursor.fetchall()
-    if len(data)==0:
+    except mysql.connector.Error as e:
+        print(f"Following Error occured\n{e}")
         return False
-    return True
+
+
+def is_duplicate(image_name):
+    check_duplicate = f"SELECT * FROM tenderweb_tender WHERE image_name = '{image_name}'"
+    data = sql_initialize(check_duplicate, False)
+    return True if data else False
 
 
 def sql_insert(img_id, date, newspaper, page, image_name):
     """
-    This function inserts the data into the database:
-    1) img_id: id of the image
-    2) dat: date of the tender
-    3) newspaper: name of the newspaper
-    4) page: page number of the newspaper where the tender was found
-    5) imageName: name of the image
-    """
-    try:
-        mydb = mysql.connector.connect(
-            host=HOST,
-            user=USER_NAME,
-            password=USER_PASS,
-        )
-    except mysql.connector.Error as err:
-        print(err)
+     This function inserts the data into the database:
+     1) image_id: id of the image
+     2) date_published: date of the tender
+     3) newspaper_source: name of the newspaper
+     4) page_number: page number of the newspaper where the tender was found
+     5) image_name: name of the image
+     """
+    sys.stdout=Logger()
 
-    mycursor = mydb.cursor()
-    myquery = "USE tender"
-    mycursor.execute(myquery)
-    # myquery = f"INSERT INTO tenderweb_tender VALUES ({img_id}, {date}, {newspaper}, {page}, {image_name})"
-    # mycursor.execute(myquery)
-    myquery = "INSERT INTO tenderweb_tender (image_id, date_published, newspaper_source, page_number, image_name) VALUES (%s, %s, %s, %s, %s)"
-    if not is_dupliacte(image_name):
-        mycursor.execute(myquery, (img_id, date, newspaper, page, image_name))
-        mydb.commit()
-        print(f"\t\t\t==>{image_name.split('/')[3]} inserted into database")
-
-
-
+    insert_query = f"INSERT INTO tenderweb_tender (image_id, date_published, newspaper_source, page_number, image_name)\
+                 VALUES ({img_id}, '{date}', '{newspaper}', {page}, '{image_name}')"
+    if not is_duplicate(image_name):
+        if sql_initialize(insert_query, True):
+            print(f"\t\t\t==>{image_name.split('/')[3]} inserted into database")
 
 
 def sql_query_date():
     """
     This function returns the date of the last tender added to the database
+    If the database is empty
     """
+
+    date_query = "SELECT date_published FROM tenderweb_tender ORDER BY id DESC LIMIT 1"
     try:
-        mydb = mysql.connector.connect(
-            host=HOST,
-            user=USER_NAME,
-            passwd=USER_PASS,
-        )
-    except mysql.connector.Error as err:
-        print("====Fail=====")
-        print(err)
-
-    mycursor = mydb.cursor()
-    myquery = "USE tender"
-    mycursor.execute(myquery)
-    myquery = "SELECT date_published FROM tenderweb_tender ORDER BY id DESC LIMIT 1"
-    mycursor.execute(myquery)
-    for x in mycursor:
-        return x
-
-
-if __name__=="__main__":
-    pass
+        return sql_initialize(date_query, False)[0]
+    except IndexError:
+        return sql_initialize(date_query, False)

@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import multiprocessing as mp
 import sys
+from log import Logger
 
 THRESH_VALUE = 100   # Pixel value less than THRESH_VALUE is converted to white
                      # and greater than THRESH_VALUE is converted to black
@@ -47,6 +48,7 @@ def same_contour(c1,c2):
          return True
 
 def find_ind(contour,contours,h):
+
    i=0
    for c in contours:
       # val=cv2.matchShapes(c, contour,1,0.0)
@@ -91,6 +93,7 @@ def page_to_notice(path, newspaper, page, output_path,no_of_newspaper_pages):
    page_count= no of pages processed
    no_of_newspaper_pages= total no of pages in the newspaper folder
    """
+   sys.stdout=Logger()
    
    #Read the image of the page
    img = cv2.imread(str(path.parent.joinpath("Images", newspaper, page)))
@@ -224,6 +227,7 @@ def page_to_notice1(path, newspaper, page, output_path,no_of_newspaper_pages):
    page_count= no of pages processed
    no_of_newspaper_pages= total no of pages in the newspaper folder
    """
+   sys.stdout=Logger()
    
    #Read the image of the page
    img = cv2.imread(str(path.parent.joinpath("Images", newspaper, page)))
@@ -269,7 +273,7 @@ def page_to_notice1(path, newspaper, page, output_path,no_of_newspaper_pages):
 
 
 def extract_notice():
-
+   sys.stdout=Logger()
    print("\n========Extracting rectangular contour=======\n")
    path = Path(sys.path[0])
    notice_path = path.parent.joinpath("subimage")
@@ -344,4 +348,5 @@ def extract_notice():
          CPU_USED=0
 
 if __name__ == "__main__":
+   sys.stdout=Logger(datetime.datetime.now())
    extract_notice()

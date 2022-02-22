@@ -11,6 +11,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from log import Logger
+
+sys.stdout=Logger()
+
 path = Path(sys.path[0])
 dir_lst=os.listdir(path)
 if ".env" not in dir_lst:
@@ -64,6 +68,8 @@ if len(sys.argv) > 1 and sys.argv[1] == "--debug":
 
 
 def wait_and_rename(download, download_dir, url, *args):
+
+    sys.stdout=Logger()
     """
 
     Waits for the file to be downloaded and rename it as per requirement
@@ -133,6 +139,7 @@ def wait_and_rename(download, download_dir, url, *args):
 
 
 def first_news_source(browser, url, download_dir):
+    sys.stdout=Logger()
     for i in range(1, 3):
         browser.get(url)
         browser.find_element(By.XPATH, f"//div[@class='epapercategory']//a[{i}]").click()
@@ -150,6 +157,7 @@ def first_news_source(browser, url, download_dir):
 
 
 def second_news_source(browser, url, download_dir):
+    sys.stdout=Logger()
     browser.get(url)
     
     try:
@@ -181,6 +189,7 @@ def second_news_source(browser, url, download_dir):
 
 
 def third_news_source(browser, url, download_dir):
+    sys.stdout=Logger()
     browser.get(url)
     try:
         WebDriverWait(browser, wait_time).until(
@@ -215,6 +224,7 @@ procedures = [first_news_source, second_news_source, third_news_source]
 
 
 def get_resource():
+    sys.stdout=Logger()
     
     print("\n========Downloading PDF from newsportals=======\n")
     with webdriver.Chrome(service=Service(executable_path=driver_path), options=options) as browser:
@@ -227,4 +237,5 @@ def get_resource():
 
 
 if __name__ == "__main__":
+    sys.stdout=Logger(datetime.datetime.now())
     get_resource()
