@@ -13,10 +13,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from log import Logger
 
-sys.stdout=Logger()
+sys.stdout = Logger()
 
 path = Path(sys.path[0])
-dir_lst=os.listdir(path)
+dir_lst = os.listdir(path)
 if ".env" not in dir_lst:
     print(f"==>\n.env file not found in: \n{path}\n<==")
     exit()
@@ -43,7 +43,7 @@ except KeyError:
 
 options.add_argument("--disable-notifications")
 options.add_argument("--incognito")
-options.add_argument("--log-level=3")
+# options.add_argument("--log-level=3")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
@@ -55,11 +55,10 @@ options.add_experimental_option(
         "download.directory_upgrade": True,
         "safebrowsing.enabled": False,
         "plugins.always_open_pdf_externally": True,
-    },
-    # "excludeSwitches", ['enable-logging']
-)
+    })
+options.add_experimental_option("excludeSwitches", ['enable-logging'])
 
-if len(sys.argv) > 1 and sys.argv[1] == "--debug":
+if len(sys.argv) > 2 and sys.argv[1] == "--debug":
     if not sys.argv[2].startswith("-p"):
         sys.argv[3] = 9222
     options.add_argument(f"--remote-debugging-port={sys.argv[3]}")
@@ -68,8 +67,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "--debug":
 
 
 def wait_and_rename(download, download_dir, url, *args):
-
-    sys.stdout=Logger()
+    sys.stdout = Logger()
     """
 
     Waits for the file to be downloaded and rename it as per requirement
@@ -139,7 +137,7 @@ def wait_and_rename(download, download_dir, url, *args):
 
 
 def first_news_source(browser, url, download_dir):
-    sys.stdout=Logger()
+    sys.stdout = Logger()
     for i in range(1, 3):
         browser.get(url)
         browser.find_element(By.XPATH, f"//div[@class='epapercategory']//a[{i}]").click()
@@ -157,21 +155,21 @@ def first_news_source(browser, url, download_dir):
 
 
 def second_news_source(browser, url, download_dir):
-    sys.stdout=Logger()
+    sys.stdout = Logger()
     browser.get(url)
-    
+
     try:
         browser.find_element(By.ID, "txtEmail").send_keys(config["USER"])
     except KeyError:
         print("USER not found in .env file")
         exit()
-    
+
     try:
         browser.find_element(By.ID, "txtPassword").send_keys(config["KEY"])
     except KeyError:
         print("KEY not found in .env file")
         exit()
-        
+
     browser.find_element(By.ID, "login-btn").click()
 
     for i in range(1, 3):
@@ -189,7 +187,7 @@ def second_news_source(browser, url, download_dir):
 
 
 def third_news_source(browser, url, download_dir):
-    sys.stdout=Logger()
+    sys.stdout = Logger()
     browser.get(url)
     try:
         WebDriverWait(browser, wait_time).until(
@@ -224,18 +222,26 @@ procedures = [first_news_source, second_news_source, third_news_source]
 
 
 def get_resource():
-    sys.stdout=Logger()
-    
+    sys.stdout = Logger()
+
     print("\n========Downloading PDF from newsportals=======\n")
     with webdriver.Chrome(service=Service(executable_path=driver_path), options=options) as browser:
         for url, procedure in zip(urls, procedures):
+            now = datetime.datetime.now()
             download_folder = url.split(".")[1].capitalize()
             download_dir = os.path.join(sys.path[0].split("source")[0], "Newspapers", download_folder)
             params = {"behavior": "allow", "downloadPath": download_dir}
             browser.execute_cdp_cmd("Page.setDownloadBehavior", params)
-            procedure(browser, url, download_dir)
+            if now.hour >= 11:
+                if procedure == procedures[1]:
+                    procedure(browser, url, download_dir)
+                    break
+                else:
+                    continue
+            elif procedure != procedures[1]:
+                procedure(browser, url, download_dir)
 
 
 if __name__ == "__main__":
-    sys.stdout=Logger(datetime.datetime.now())
+    sys.stdout = Logger(datetime.datetime.now())
     get_resource()

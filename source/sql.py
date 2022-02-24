@@ -5,7 +5,7 @@ from pathlib import Path
 from dotenv import dotenv_values
 from log import Logger
 
-sys.stdout=Logger()
+sys.stdout = Logger()
 
 path = Path(sys.path[0])
 
@@ -57,7 +57,7 @@ def sql_initialize(query, is_insert):
             image_name varchar(255));
 
     """
-    sys.stdout=Logger()
+    sys.stdout = Logger()
 
     try:
         with mysql.connector.connect(host=HOST, user=USER_NAME, password=USER_PASS, database="tender") as connection:
@@ -90,7 +90,7 @@ def sql_insert(img_id, date, newspaper, page, image_name):
      4) page_number: page number of the newspaper where the tender was found
      5) image_name: name of the image
      """
-    sys.stdout=Logger()
+    sys.stdout = Logger()
 
     insert_query = f"INSERT INTO tenderweb_tender (image_id, date_published, newspaper_source, page_number, image_name)\
                  VALUES ({img_id}, '{date}', '{newspaper}', {page}, '{image_name}')"
@@ -99,14 +99,17 @@ def sql_insert(img_id, date, newspaper, page, image_name):
             print(f"\t\t\t==>{image_name.split('/')[3]} inserted into database")
 
 
-def sql_query_date():
+def sql_query_info():
     """
-    This function returns the date of the last tender added to the database
-    If the database is empty
+    This function returns the date of the last tender added to the database and a boolean value as a flag
     """
 
     date_query = "SELECT date_published FROM tenderweb_tender ORDER BY id DESC LIMIT 1"
     try:
-        return sql_initialize(date_query, False)[0]
+        latest_date = sql_initialize(date_query, False)[0]
     except IndexError:
-        return sql_initialize(date_query, False)
+        latest_date = sql_initialize(date_query, False)
+
+    source_query = f"SELECT DISTINCT newspaper_source FROM tender.tenderweb_tender WHERE date_published = '{latest_date[0]}'"
+    data = [data for data in sql_initialize(source_query, False) for data in data]
+    return latest_date, 'kantipur' in data or 'kathmandupost' in data

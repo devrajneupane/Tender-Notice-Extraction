@@ -1,16 +1,11 @@
 import sys
 import time
-from datetime import date
 import datetime
 import ocr
 from log import Logger
-sys.stdout=Logger(datetime.datetime.now())
-import get_resources
-import filter_notices
-import image_extraction
-import notice_extraction
-from sql import sql_query_date
-import googledrive
+from sql import sql_query_info
+
+sys.stdout = Logger(datetime.datetime.now())
 
 
 def main():
@@ -18,13 +13,20 @@ def main():
     # Clean Unwanted Folders
     ocr.clean_folders()
 
-    today = date.today().strftime("%Y-%m-%d")
-    latest_date_from_database = sql_query_date()
+    today = datetime.datetime.now()
+    latest_date_from_database, exist = sql_query_info()
 
     # If the current date is present in the database then terminate the program
     if latest_date_from_database:
-        if today == latest_date_from_database[0].strftime("%Y-%m-%d"):
-            sys.exit("#######--SQL DATABASE ALREADY UPDATED--#######")
+        if today.strftime("%Y-%m-%d") == latest_date_from_database[0].strftime("%Y-%m-%d"):
+            if (today.hour < 11) or exist:
+                sys.exit("#######--SQL DATABASE ALREADY UPDATED--#######")
+
+    import get_resources
+    import filter_notices
+    import image_extraction
+    import notice_extraction
+    import googledrive
 
     # get pdf from websites and store in /Newspaper folder
     get_resources.get_resource()
@@ -45,7 +47,7 @@ def main():
     # googledrive.upload_to_google_drive()
 
     # Clean Unwanted Folders
-    # ocr.clean_folders()
+    ocr.clean_folders()
 
     elapsed = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
     print(f"Time Elapsed: {elapsed}")
