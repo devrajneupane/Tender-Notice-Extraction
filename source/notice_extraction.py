@@ -8,7 +8,7 @@ from log import Logger
 THRESH_VALUE = 100   # Pixel value less than THRESH_VALUE is converted to white
                      # and greater than THRESH_VALUE is converted to black
 
-RECOMPUTE_WIDTH= 1500    #If the width and height of the contour
+RECOMPUTE_WIDTH= 1800    #If the width and height of the contour
 RECOMPUTE_HEIGHT= 2000   # is greater than RECOMPUTE_WIDTH, RECOMPUTE_HEIGHT
                          # then the contour is recomputed
                          # to search for inner rectangular contour

@@ -44,7 +44,7 @@ def main():
     # Apply OCR to the extracted notices to detect if the notice is tender
     ocr.tender_filter()
 
-    # googledrive.upload_to_google_drive()
+    googledrive.upload_to_google_drive()
 
     # Clean Unwanted Folders
     ocr.clean_folders()

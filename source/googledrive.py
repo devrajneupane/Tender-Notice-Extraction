@@ -3,10 +3,15 @@ import os
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import pydrive.settings
+import datetime
 import sys
+from log import Logger
 
 
 def upload_to_google_drive():
+    sys.stdout=Logger()
+
+    print("\n========Uploading Images to Google Drive=======\n")
 
     path = Path(sys.path[0])
 
@@ -34,8 +39,6 @@ def upload_to_google_drive():
     if len(tender_date_list)==0:
         print("=====Tender folder is empty=====")
         exit()
-
-
 
     date=tender_date_list[0]
     try:
@@ -72,7 +75,7 @@ def upload_to_google_drive():
         for img in tender_img_list:
             img_query_name=drive.ListFile({"q": "trashed=false and '{}' in parents and title='{}'".format(newspaper_folder['id'],f"Tender/{date}/{newspaper}/{img}")}).GetList()
             if not len(img_query_name)>0:                    
-                img_file = drive.CreateFile({'parents': [{'id': newspaper_folder['id']}],'title':f"Tender/{date}/{newspaper}/{img}"})
+                img_file = drive.CreateFile({'parents': [{'id': newspaper_folder['id']}],'title':f"{img}"})
                 img_file.SetContentFile(str(web_root_folder.joinpath("media","Tender",date,newspaper,img)))
                 img_file.Upload()
                 print("Uploaded {}".format(img))
@@ -80,5 +83,40 @@ def upload_to_google_drive():
                 print(f"====={img} already uploaded=====")
                 continue
 
+
+def upload_dump():
+    sys.stdout=Logger()
+    
+    dump_dir = Path(sys.path[0]).parent.parent.parent.parent
+    conf_dir = Path(sys.path[0]).parent
+    dump_lst=os.listdir(dump_dir.joinpath("Dumps"))
+    for dump in dump_lst:
+        dump_date= dump.split(".sql")[0].split("tender-")[1]
+        date_now=datetime.datetime.now().strftime("%Y-%m-%d")
+        if dump_date == date_now:
+            print("\n========Uploading SQL Dump to Google Drive=======\n")
+            pydrive.settings.LoadSettingsFile(filename=str(conf_dir.joinpath("pydriveConf","settings.yaml")))
+            
+            gauth = GoogleAuth()           
+            drive = GoogleDrive(gauth)
+
+            gauth.DEFAULT_SETTINGS['client_config_file'] = str(conf_dir.joinpath("pydriveConf","client_secrets.json"))
+            credentials_location = str(conf_dir.joinpath("pydriveConf","credentials.json"))
+            if not (credentials_location == None):
+                gauth.LoadCredentialsFile(credentials_location)
+            DRIVE_ROOT_FOLDER_ID= "16UlV3auKBupPyv1jeiYuRxziMdaOJsvP"
+
+            try:
+                date_folder_name_query=drive.ListFile({"q": "mimeType='application/vnd.google-apps.folder' and trashed=false and '{}' in parents and title='{}'".format(DRIVE_ROOT_FOLDER_ID,date_now)}).GetList()
+                gauth.SaveCredentialsFile(str(conf_dir.joinpath("pydriveConf","credentials.json")))
+                dump_file=drive.CreateFile({'parents': [{'id': date_folder_name_query[0]['id']}],'title':f"{dump}"})
+                dump_file.SetContentFile(str(dump_dir.joinpath("Dumps",dump)))
+                dump_file.Upload()
+                print("Uploaded {}".format(dump))
+            except Exception as e:
+                print(e)
+                exit()
+
 if __name__=="__main__":
-    upload_to_google_drive()
+    sys.stdout=Logger(datetime.datetime.now())
+    upload_dump()
