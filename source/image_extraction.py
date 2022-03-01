@@ -52,7 +52,7 @@ def extract_image():
     sys.stdout=Logger()
 
     print("\n========Converting PDF to Images=======\n")
-    path = Path(sys.path[0])
+    path = Path(__file__).parent
     if not path.parent.joinpath("Images").exists():
         os.mkdir(path.parent.joinpath("Images"))
 

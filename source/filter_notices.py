@@ -18,7 +18,7 @@ from log import Logger
 
 
 # from model import get_model
-path = Path(sys.path[0])
+path = Path(__file__).parent
 
 
 def resize(img):

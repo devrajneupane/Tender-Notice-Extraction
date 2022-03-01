@@ -275,7 +275,7 @@ def page_to_notice1(path, newspaper, page, output_path,no_of_newspaper_pages):
 def extract_notice():
    sys.stdout=Logger()
    print("\n========Extracting rectangular contour=======\n")
-   path = Path(sys.path[0])
+   path = Path(__file__).parent
    notice_path = path.parent.joinpath("subimage")
 
    if not notice_path.exists():

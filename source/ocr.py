@@ -16,7 +16,7 @@ sys.stdout=Logger()
 # so that we can use all the available threads
 # during the execution of the program
 CPU_COUNT = mp.cpu_count()
-path = Path(sys.path[0])
+path = Path(__file__).parent
 website_root_folder = path.parent.parent
 
 dir_lst = os.listdir(path)

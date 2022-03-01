@@ -15,7 +15,7 @@ from log import Logger
 
 sys.stdout = Logger()
 
-path = Path(sys.path[0])
+path = Path(__file__).parent
 dir_lst = os.listdir(path)
 if ".env" not in dir_lst:
     print(f"==>\n.env file not found in: \n{path}\n<==")
@@ -232,14 +232,15 @@ def get_resource():
             download_dir = os.path.join(sys.path[0].split("source")[0], "Newspapers", download_folder)
             params = {"behavior": "allow", "downloadPath": download_dir}
             browser.execute_cdp_cmd("Page.setDownloadBehavior", params)
-            if now.hour >= 11:
-                if procedure == procedures[1]:
-                    procedure(browser, url, download_dir)
-                    break
-                else:
-                    continue
-            elif procedure != procedures[1]:
-                procedure(browser, url, download_dir)
+            # if now.hour >= 11:
+            #     if procedure == procedures[1]:
+            #         procedure(browser, url, download_dir)
+            #         break
+            #     else:
+            #         continue
+            # elif procedure != procedures[1]:
+            #     procedure(browser, url, download_dir)
+            procedure(browser, url, download_dir)
 
 
 if __name__ == "__main__":

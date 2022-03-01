@@ -13,7 +13,7 @@ def upload_to_google_drive():
 
     print("\n========Uploading Images to Google Drive=======\n")
 
-    path = Path(sys.path[0])
+    path = Path(__file__).parent
 
     pydrive.settings.LoadSettingsFile(filename=str(path.parent.joinpath("pydriveConf","settings.yaml")))
     # pydrive.settings.SetClientSecretsFile(filename=str(path.parent.joinpath("pydriveConf","client_secrets.json")))
@@ -73,7 +73,7 @@ def upload_to_google_drive():
             print("=====No tender image found=====")
             continue
         for img in tender_img_list:
-            img_query_name=drive.ListFile({"q": "trashed=false and '{}' in parents and title='{}'".format(newspaper_folder['id'],f"Tender/{date}/{newspaper}/{img}")}).GetList()
+            img_query_name=drive.ListFile({"q": "trashed=false and '{}' in parents and title='{}'".format(newspaper_folder['id'],f"{img}")}).GetList()
             if not len(img_query_name)>0:                    
                 img_file = drive.CreateFile({'parents': [{'id': newspaper_folder['id']}],'title':f"{img}"})
                 img_file.SetContentFile(str(web_root_folder.joinpath("media","Tender",date,newspaper,img)))
@@ -119,4 +119,5 @@ def upload_dump():
 
 if __name__=="__main__":
     sys.stdout=Logger(datetime.datetime.now())
+    # upload_to_google_drive()
     upload_dump()

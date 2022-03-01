@@ -4,6 +4,7 @@ import datetime
 import ocr
 from log import Logger
 from sql import sql_query_info
+from pathlib import Path
 
 sys.stdout = Logger(datetime.datetime.now())
 
@@ -12,7 +13,6 @@ def main():
     start_time = time.time()
     # Clean Unwanted Folders
     ocr.clean_folders()
-
     today = datetime.datetime.now()
     latest_date_from_database, exist = sql_query_info()
 

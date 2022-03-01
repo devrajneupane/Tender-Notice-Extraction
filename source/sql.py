@@ -7,7 +7,7 @@ from log import Logger
 
 sys.stdout = Logger()
 
-path = Path(sys.path[0])
+path = Path(__file__).parent
 
 dir_lst = os.listdir(path)
 if ".env" not in dir_lst:
@@ -46,7 +46,7 @@ def sql_initialize(query, is_insert):
     A database named tender must be exists with a table named tenderweb_tender with following fields
     id, image_id, date_published, newspaper_source, page_number, image_name
     Run following SQL query if the databse and table doesn't exist already
-    CREATE DATABSE IF NOT EXISTS tender;
+    CREATE DATABASE IF NOT EXISTS tender;
     USE tender;
     CREATE TABLE IF NOT EXISTS tenderweb_tender(
             id int AUTO_INCREMENT PRIMARY KEY,
