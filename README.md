@@ -1,3 +1,15 @@
+This project is all about extracting tender notice published on newspaper.
+As whole currently this system can extract notices form 5 newspaper portals,
+they are Gorkhapatra, Himalayan Times, Kantipur, Kathmandu Post and Rising Nepal.
+
+Not only that each module can be run isolately hence one can give newspaper pdf of any newspaper publisher and the system will extract tender notices. 
+If the requirement is to get not only tender notice but all kind of notice then one can skip last module where only tender notices was filtered.
+
+This whole project is implemented on Pyhton Language, it uses Convolution Neural Network to accomplish its objective.
+
+
+
+
 Sample `.env` file
 
 ```
