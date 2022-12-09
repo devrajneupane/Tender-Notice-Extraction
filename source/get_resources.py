@@ -1,67 +1,54 @@
+import datetime
 import os
 import sys
 import time
-import datetime
-import requests
-from bs4 import BeautifulSoup
 from pathlib import Path
-from selenium import webdriver
-from dotenv import dotenv_values
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from log import Logger
 
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
+from log import Logger
+from utils import config
+
+# enable browser logging
 sys.stdout = Logger()
 
-path = Path(__file__).parent
-dir_lst = os.listdir(path)
-if ".env" not in dir_lst:
-    print(f"==>\n.env file not found in: \n{path}\n<==")
-    exit()
-
-
-config = dotenv_values(path.joinpath(".env"))
-urls = list(config.values())[1:4]
-
-try:
-    driver_path = config["DRIVER_PATH"]
-except KeyError:
-    print("DRIVER_PATH not found in .env file")
-    exit()
+path = Path(__file__).parent.parent
+webdriver_logs = path / "logs" / "ChromeDriver" / f"chromedriver-{str(datetime.date.today())}-.log"
+urls = [config[key] for key in config.keys() if key.startswith('URL')]
 wait_time = 60
 
 options = webdriver.ChromeOptions()
 options.headless = True
 
-try:
-    options.binary_location = config["BINARY_EXECUTABLE"]
-except KeyError:
-    print("BINARY_EXECUTABLE not found in .env file")
-    exit()
-
+options.binary_location = config["BINARY_EXECUTABLE"]
 options.add_argument("--disable-notifications")
 options.add_argument("--incognito")
-# options.add_argument("--log-level=3")
+options.add_argument("--log-level=3")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 options.add_experimental_option(
     "prefs",
     {
-        # "download.default_directory": download_dir,
+        "download.default_directory": str(path / "Newspapers" / urls[0].split('.')[-2].capitalize()),
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
+        # "download.open_pdf_in_system_reader": False,
+        # "profile.default_content_settings.popups": 0,
         "safebrowsing.enabled": False,
         "plugins.always_open_pdf_externally": True,
     })
 options.add_experimental_option("excludeSwitches", ['enable-logging'])
 
-if len(sys.argv) > 2 and sys.argv[1] == "--debug":
-    if not sys.argv[2].startswith("-p"):
-        sys.argv[3] = 9222
-    options.add_argument(f"--remote-debugging-port={sys.argv[3]}")
+if len(sys.argv) >= 2 and sys.argv[1] == "--debug":
+    if not sys.argv[-2].startswith("-p"):
+        sys.argv.append(9222)
+    options.add_argument(f"--remote-debugging-port={sys.argv[-1]}")
     # access debugged browser from external machine
     options.add_argument("--remote-debugging-address=0.0.0.0")
 
@@ -95,6 +82,7 @@ def wait_and_rename(download, download_dir, url, *args):
 
         else:
             download.click()
+            time.sleep(1)
 
         while True:
             files = [os.path.join(download_dir, basename) for basename in os.listdir(download_dir)]
@@ -111,7 +99,7 @@ def wait_and_rename(download, download_dir, url, *args):
                 if not os.path.exists(png_path):
                     os.makedirs(png_path)
 
-                args[0].save_screenshot(os.path.join(png_path, "test.png"))
+                args[0].save_screenshot(os.path.join(png_path, f"{download_dir.split('/')[-1]}-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.png"))
                 print(f"{latest_file.endswith('.crdownload') = }\n{latest_file = }\n{old_file = }")
 
             # checks if new file completely downloaded or not
@@ -133,7 +121,7 @@ def wait_and_rename(download, download_dir, url, *args):
                 time.sleep(5)
 
     except Exception as e:
-        print(f"Following error occured while downloading \n {e}")
+        print(f"Following error occured while downloading from {url}\n {e}")
 
 
 def first_news_source(browser, url, download_dir):
@@ -142,13 +130,10 @@ def first_news_source(browser, url, download_dir):
         browser.get(url)
         browser.find_element(By.XPATH, f"//div[@class='epapercategory']//a[{i}]").click()
         name_url = browser.current_url
-        source = browser.page_source
-        soup = BeautifulSoup(source, "lxml")
-        content = soup.find("div", class_="pdf")
-        news = content.find_all("a")[0].get("href")
-        browser.get(news)
+        browser.find_element(By.XPATH, f"//div[@class='papersection']//div[1]").click()
+        browser.switch_to.window(browser.window_handles[-1])
         WebDriverWait(browser, wait_time * 5).until(
-            EC.element_to_be_clickable((By.XPATH, "//div[@class='textLayer']"))
+            EC.element_to_be_clickable((By.XPATH, '//button[@id="download"]')) # //div[@class='textLayer']
         )
         download = browser.find_element(By.XPATH, "//button[@id='download']")
         wait_and_rename(download, download_dir, name_url, browser, False)
@@ -158,18 +143,8 @@ def second_news_source(browser, url, download_dir):
     sys.stdout = Logger()
     browser.get(url)
 
-    try:
-        browser.find_element(By.ID, "txtEmail").send_keys(config["USER"])
-    except KeyError:
-        print("USER not found in .env file")
-        exit()
-
-    try:
-        browser.find_element(By.ID, "txtPassword").send_keys(config["KEY"])
-    except KeyError:
-        print("KEY not found in .env file")
-        exit()
-
+    browser.find_element(By.ID, "txtEmail").send_keys(config["USER"])
+    browser.find_element(By.ID, "txtPassword").send_keys(config["KEY"])
     browser.find_element(By.ID, "login-btn").click()
 
     for i in range(1, 3):
@@ -194,7 +169,7 @@ def third_news_source(browser, url, download_dir):
             EC.element_to_be_clickable((By.XPATH, "//p[text()='Continue']"))
         ).click()
         WebDriverWait(browser, wait_time).until(
-            EC.element_to_be_clickable((By.XPATH, "//div[@id='ext-layouttoolbaricon-16']"))
+            EC.element_to_be_clickable((By.XPATH, "//div[@id='ext-layouttoolbaricon-17']"))
         ).click()
         WebDriverWait(browser, wait_time).until(
             EC.element_to_be_clickable((By.XPATH, "//div[text()='Select All']"))
@@ -205,7 +180,7 @@ def third_news_source(browser, url, download_dir):
         WebDriverWait(browser, wait_time).until(
             EC.element_to_be_clickable((By.XPATH, "//input[@type='button']"))
         ).click()
-        browser.switch_to.window(browser.window_handles[1])
+        browser.switch_to.window(browser.window_handles[-1])
         download = WebDriverWait(browser, wait_time * 5).until(
             EC.element_to_be_clickable((By.XPATH, "//*[@id='divInfo']/div[1]/div[2]/p[3]/span/a")))
 
@@ -214,7 +189,8 @@ def third_news_source(browser, url, download_dir):
 
         wait_and_rename(download, download_dir, "/".join(url.split(".")[:2]), browser, False)
 
-    except:
+    except Exception as e:
+        print(f"Fowllowing error occured while downloading pdf from f{url}\n{e}")
         pass
 
 
@@ -225,7 +201,7 @@ def get_resource():
     sys.stdout = Logger()
 
     print("\n========Downloading PDF from newsportals=======\n")
-    with webdriver.Chrome(service=Service(executable_path=driver_path), options=options) as browser:
+    with webdriver.Chrome(service=Service(executable_path=config["DRIVER_PATH"], log_path=str(webdriver_logs)), options=options) as browser:
         for url, procedure in zip(urls, procedures):
             now = datetime.datetime.now()
             download_folder = url.split(".")[1].capitalize()
