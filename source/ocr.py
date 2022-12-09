@@ -1,33 +1,30 @@
-import os
-import sys
-import shutil
-from pathlib import Path
 import multiprocessing as mp
+import os
+import shutil
+import sys
+from pathlib import Path
+
 import cv2
 import numpy as np
 import pytesseract as tess
-from dotenv import dotenv_values
-from sql import sql_insert
+
 from log import Logger
+from sql import sql_insert
+from utils import config
+import datetime
 
 sys.stdout=Logger()
 
-# CPU_COUNT returns the no of threads available
-# so that we can use all the available threads
+# CPU_COUNT returns the no CPUs in the system.
+# so that we can use all the available CPUs
 # during the execution of the program
 CPU_COUNT = mp.cpu_count()
-path = Path(__file__).parent
-website_root_folder = path.parent.parent
-
-dir_lst = os.listdir(path)
-if ".env" not in dir_lst:
-    print(f"==>\n.env file not found in: \n{path}\n<==")
-    exit()
-env_path = path.joinpath(".env")
+path = Path(__file__).parent.parent
+media_path = path.parent / 'run/media'
 
 if sys.platform == "win32":
     try:
-        tesseract_exec = dotenv_values(env_path)["TESSERACT_EXECUTABLE"]
+        tesseract_exec = config["TESSERACT_EXECUTABLE"]
     except KeyError:
         print("TESSERACT_EXECUTABLE not found in .env file")
         exit()
@@ -41,20 +38,20 @@ def remove_duplicate_img():
     If the matrix is same, it is removed
     """
     sys.stdout=Logger()
-    newspaper_lst = os.listdir(path.parent.joinpath("Notices"))
+    newspaper_lst = os.listdir(path.joinpath("Notices"))
     for newspaper in newspaper_lst:
-        img_lst = os.listdir(path.parent.joinpath("Notices", newspaper))
+        img_lst = os.listdir(path.joinpath("Notices", newspaper))
         for img in img_lst:
-            org_img = np.array(cv2.imread(str(path.parent.joinpath("Notices", newspaper, img)), 0))
+            org_img = np.array(cv2.imread(str(path.joinpath("Notices", newspaper, img)), 0))
             for img2 in img_lst:
                 if img == img2:
                     continue
                 else:
-                    dup_img = np.array(cv2.imread(str(path.parent.joinpath("Notices", newspaper, img2)), 0))
+                    dup_img = np.array(cv2.imread(str(path.joinpath("Notices", newspaper, img2)), 0))
                     if not org_img.shape == dup_img.shape:
                         continue
                     if np.array_equal(org_img, dup_img):
-                        os.remove(str(path.parent.joinpath("Notices", newspaper, img2)))
+                        os.remove(str(path.joinpath("Notices", newspaper, img2)))
                         img_lst.remove(img2)
                         print(f"\t\t==> {img} is same as{img2}, so {img2} is removed")
 
@@ -74,7 +71,7 @@ def clean_folders():
     dirs = ['Newspapers', 'Images', 'Notices', 'notNotices', 'notTender', 'subimage']
 
     for directory in dirs:
-        tmp_dir = path.parent.joinpath(directory)
+        tmp_dir = path.joinpath(directory)
         if os.path.exists(tmp_dir):
             try:
                 shutil.rmtree(tmp_dir)
@@ -89,9 +86,9 @@ def is_tender(folder, img, dic):
     and if found, it moves the image to Tender folder
     """
     sys.stdout=Logger()
-    image = cv2.imread(str(path.parent.joinpath("Notices", folder, img)), 0)
+    image = cv2.imread(str(path.joinpath("Notices", folder, img)), 0)
     strike = 0
-    text = tess.image_to_data(image, lang="eng+nep", timeout=240)
+    text = tess.image_to_data(image, lang="eng+nep", timeout=300)
     for x, b in enumerate(text.splitlines()):
         if x != 0:
             b = b.split()
@@ -114,16 +111,16 @@ def is_tender(folder, img, dic):
     if strike >= 1:
 
         try:
-            os.mkdir(website_root_folder.joinpath("media", "Tender", date))
+            os.mkdir(media_path.joinpath("Tender", date))
 
         except FileExistsError:
             pass
         try:
-            os.mkdir(website_root_folder.joinpath("media", "Tender", date, folder[:-11]))
+            os.mkdir(media_path.joinpath("Tender", date, folder[:-11]))
         except FileExistsError:
             pass
 
-        cv2.imwrite(str(website_root_folder.joinpath("media", "Tender", date, folder[:-11], img)), image)
+        cv2.imwrite(str(media_path.joinpath("Tender", date, folder[:-11], img)), image)
 
         # Insert the information regarding tender into the database
         print(f"\t\t==> {img} is Tender")
@@ -131,15 +128,15 @@ def is_tender(folder, img, dic):
 
     else:
         try:
-            os.mkdir(path.parent.joinpath("notTender", date))
+            os.mkdir(path.joinpath("notTender", date))
 
         except FileExistsError:
             pass
         try:
-            os.mkdir(path.parent.joinpath("notTender", date, folder[:-11]))
+            os.mkdir(path.joinpath("notTender", date, folder[:-11]))
         except FileExistsError:
             pass
-        cv2.imwrite(str(path.parent.joinpath("notTender", date, folder[:-11], img)), image)
+        cv2.imwrite(str(path.joinpath("notTender", date, folder[:-11], img)), image)
         print(f"\t\t==> {img} is not Tender")
 
 
@@ -151,36 +148,37 @@ def tender_filter():
     remove_duplicate_img()
 
     try:
-        dicx = open(path.parent.joinpath("dict.txt"), "r", encoding="utf-8")
+        dicx = open(path.joinpath("dict.txt"), "r", encoding="utf-8")
     except FileNotFoundError:
-        print(f"==>'dict.txt' not found in: \n{path.parent}\n<==")
+        print(f"==>'dict.txt' not found in: \n{path}\n<==")
         exit()
 
+
     try:
-        os.mkdir(website_root_folder.joinpath("media"))
+        os.mkdir(media_path)
     except FileExistsError:
         pass
 
     try:
-        os.mkdir(website_root_folder.joinpath("media", "Tender"))
+        os.mkdir(media_path.joinpath("Tender"))
     except FileExistsError:
         pass
 
     try:
-        os.mkdir(path.parent.joinpath("notTender"))
+        os.mkdir(path.joinpath("notTender"))
     except FileExistsError:
         pass
 
     dic = dicx.read().lower().splitlines()
 
     try:
-        folder_list = os.listdir(path.parent.joinpath("Notices"))
+        folder_list = os.listdir(path.joinpath("Notices"))
     except FileNotFoundError:
-        print(f"==>'Notices' folder not found in: \n{path.parent}\n<==")
+        print(f"==>'Notices' folder not found in: \n{path}\n<==")
         exit()
 
     if len(folder_list) == 0:
-        print(f"==>\n'Notices' folder is empty in: \n{path.parent}<==")
+        print(f"==>\n'Notices' folder is empty in: \n{path}<==")
         exit()
     folder_count = 0
 
@@ -189,9 +187,9 @@ def tender_filter():
         print(f"Processing Newspaper: {folder}=====================[{folder_count}/{len(folder_list)}]")
 
         # multiprocessing the execution of the program
-        img_list = os.listdir(path.parent.joinpath("Notices", folder))
+        img_list = os.listdir(path.joinpath("Notices", folder))
         if len(img_list) == 0:
-            print(f"==>\n'{folder}' folder is empty in: \n{path.parent.joinpath('Notices')}\n<==")
+            print(f"==>\n'{folder}' folder is empty in: \n{path.joinpath('Notices')}\n<==")
             continue
         image_count = 0
         CPU_USED = 0
