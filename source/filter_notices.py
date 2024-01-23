@@ -166,5 +166,6 @@ def applyCNN1():
 
 
 if __name__ == '__main__':
+    from datetime import datetime
     sys.stdout=Logger(datetime.datetime.now())
     applyCNN()
