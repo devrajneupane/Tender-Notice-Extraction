@@ -3,8 +3,6 @@ import fitz
 from pathlib import Path
 import multiprocessing as mp
 import sys
-import datetime
-
 from log import Logger
 
 
@@ -24,6 +22,7 @@ def paper_to_image(epaper_dir,source,newspaper,path):
     newspaper= name of the newspaper
     path= path of the current file
     """
+    sys.stdout=Logger()
     output_path = path.parent.joinpath("Images")
     if not path.parent.joinpath(output_path).exists():
         os.mkdir(output_path)
@@ -50,8 +49,8 @@ def paper_to_image(epaper_dir,source,newspaper,path):
         
 
 def extract_image():
-
     sys.stdout=Logger()
+
     print("\n========Converting PDF to Images=======\n")
     path = Path(__file__).parent
     if not path.parent.joinpath("Images").exists():
@@ -117,5 +116,5 @@ def extract_image():
 
 
 if __name__ == "__main__":
-    sys.stdout=Logger(str(datetime.datetime.now()))
+    sys.stdout=Logger(datetime.datetime.now())
     extract_image()

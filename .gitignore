@@ -11,16 +11,18 @@ Datasets/*
 Screenshots/*
 Tender/*
 notTender/*
-/source/models/datasets.npy
+models/datasets.npy
 subimage/*
 Tender/*    
 notTender/*
 notNotices/*
 Notices/*
 img/*
-source/models/datasets2class.npy
-source/models/datasets_old.npy
+models/datasets2class.npy
+models/datasets_old.npy
 logs/*
+.venv/*
+pydriveConf/*
 
 # bytecode cache files
 */__pycache__/*
